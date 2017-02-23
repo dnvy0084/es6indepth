@@ -1,4 +1,4 @@
-console.log( 'Iterator and forof loop' );
+console.log( 'Iterator와 for..of 반복문' );
 
 let a = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
 
@@ -86,32 +86,41 @@ console.log( '4-3. Object' );
 
 let o = { a: 1, b: 2, c: 3, d: 4, e: 5 };
 
-o[ Symbol.iterator ] = function* (){
+// o[ Symbol.iterator ] = function* (){
 
-	for( let key in o ){
+// 	for( let key in o ){
 
-		yield o[key];
-	}
-}
-
-// o[ Symbol.iterator ] = function(){
-
-// 	const props = [ 'a', 'b', 'c' ];
-// 	let n = 0;
-
-// 	return {
-// 		next(){
-
-// 			if( n >= props.length )
-// 				return { done: true, value: undefined };
-
-// 			return { done: false, value: o[ props[n++] ] };
-// 		}
+// 		yield o[key];
 // 	}
-// };
+// }
 
-for( let n of o ){
-	console.log(n);
+o[ Symbol.iterator ] = function(){
+
+	let props = [];
+
+	for( let key in this ) props.push( key );
+	
+	return {
+
+		next(){
+
+			return { 
+				done: props.length == 0, 
+				value: o[ props.shift() ] 
+			};
+		}
+	}
+};
+
+// for( let n of o ){
+// 	console.log(n);
+// }
+
+let iter = o[ Symbol.iterator ](), 
+	result = iter.next();
+
+for( ; !result.done; result = iter.next() ){
+
+	console.log( result.value );
 }
-
 
