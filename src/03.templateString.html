@@ -1,0 +1,121 @@
+<html>
+<head>
+	<title>3. template string</title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		let name = 'Kim Jin Hoon',
+			age = 30;
+
+		let t = `I\`m ${name}. and I\`m ${age} years old.`;
+
+		console.log( t );
+
+		let paragraph = `
+  <h1>Title</h1>
+  <p>Unauthorized hockeying can result in penalties
+  of up to ${30} minutes.</p>
+`;
+
+		console.log( paragraph );
+
+		function testTemplateString( template, ...rest ){
+
+			console.log( template, rest.length, rest );
+
+			return template.reduce( ( a, b ) => a + b + ( rest.shift() || '' ), '' );
+		}
+
+		console.log( testTemplateString`a ${1}, b ${2}, c ${3}, d ${4}` );
+
+
+		/**
+		 * 언어별 문자열을 저장하고 있는 객체. 
+		 * @type {Object}
+		 */
+		const words = {
+
+			'hi' : [ '안녕 {0}', 'Hi {0}', '{0} صباح الخير.', 'Guten Morgen.  {0}' ],
+			'bye': [ '잘가 {0}', 'Bye {0}', 'وداعا. {0}', 'Bye. {0}' ],
+			'stop': [ '고만!', 'Stop!', 'توقف', 'Stopp' ]
+		};
+
+
+		/**
+		 * i18n 함수를 초기화 하는 함수. 
+		 * 1. 클로져로 구현하여 countryCode와 words에 대한 접근을 제한한다. 
+		 * @param  {[type]} countryCode [description]
+		 * @param  {[type]} words       [description]
+		 * @return {[type]}             [description]
+		 */
+		function initializeI18n( countryCode, words ){
+
+			return function( template, ...rest ){
+
+				let key = template[0].replace( /\s+/g, '' );
+
+				if( !words.hasOwnProperty( key ) )
+					throw new Error( 'Error' );
+
+				let string = words[ key ][ countryCode ];
+
+				return string.replace( /\{[0-9]+\}/g, c => rest[ c.match( /\d+/g )[0] ] );
+			}
+		}
+
+		const i18n = initializeI18n( 1, words );
+
+		console.log( i18n`hi ${name}` );
+		console.log( i18n`bye ${name}` );
+		console.log( i18n`stop` );
+
+		console.log( initializeI18n( 3, words )`stop` ); // Stopp
+
+		function makePrintf( signChar = "_" ){
+
+			return function( out, ...rest ){
+
+				return out.replace( 
+					new RegExp( signChar, 'g' ), 
+					s => rest.shift() || signChar 
+				) + rest.join();
+			}
+		}
+
+		const printf = makePrintf();
+
+		const log = ( out, ...rest ) => {
+
+			console.log( printf( out, ...rest ) );
+		}
+
+
+		let shader = `
+
+			attribute vec2 pos;
+			uniform mat4 perspective;
+
+			void main(){
+
+				gl_Position = vec4( pos, 0, 1 );
+			}
+		`
+
+		/**
+		 * template의 문자열 길이와 template.raw의 문자열 길이 비교 테스
+		 * @param  {[type]}    template [description]
+		 * @param  {...[type]} rest     [description]
+		 * @return {[type]}             [description]
+		 */
+		function rawTest( template, ...rest ){
+
+			template.forEach( 
+				(s, i, _) => log( '_(_), _(_)', s, s.length, template.raw[i], template.raw[i].length ) 
+			);
+		}
+
+
+	</script>
+</body>
+</html>

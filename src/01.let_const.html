@@ -1,0 +1,101 @@
+<html>
+<head>
+	<title>let, const</title>
+</head>
+<body>
+	<div class="wrapper">
+	</div>
+	<script type="text/javascript">
+
+		const NUM = 'test'; // 'test';
+
+		NUM = 'complete'; // Error: Assignment to constant variable.
+		NUM += 'ing'; // Error: Assignment to constant variable.
+
+		const EMPTY; // SyntaxError: Missing initializer in const declaration
+
+		hoistingProblem();
+		// hoisting();
+		// loopIndexProblem();
+
+		/**
+		 * var 로 선언한 변수는 전역이나 선언된 함수 scope의 최상단으로 끌어올려(hoist) 집니다. 
+		 * @return {[type]} [description]
+		 */
+		function hoistingProblem(){
+
+			let t = 'test';
+
+			setTimeout( function(){
+
+				console.log( '1', t ); // 'test'
+
+				let a = 'a';
+
+				if( true ){
+
+					let t = 'complete';	
+
+					console.log( a ); // a
+				}
+
+				console.log( '2', t ); // 'test'
+				
+			}, 1000 )
+		}
+
+		function hoisting(){
+
+			// var a = undefined;
+
+			console.log( a ); // undefined
+			console.log( b ); // error
+
+			var a = 12;
+		}
+
+		/**
+		 * var로 선언한 i는 for loop가 종료되는 시점의 값으로 참조되어 
+		 * 아래와 같은 code 실행시 undefined가 출력된다. 
+		 * @return {[type]} [description]
+		 */
+		function loopIndexProblem(){
+
+			var messages = [ 'Hi', 'This is', 'console!' ];
+
+			for( let i = 0; i < messages.length; i++ ){
+
+				setTimeout( function(){
+
+					console.log( messages[i] );
+
+				}, i * 300 );
+			}
+		}
+
+
+		// int add( int, int );
+
+		// void main( int argc, char** argv ){
+
+		// 	int n = add( 1, 2 );
+		// 	int m = mul( 2, 4 );
+
+		// 	printf( '%d', n );
+
+		// 	return 0;
+		// }
+
+		// int add( int a, int b ){
+
+		// 	return a + b;
+		// }
+
+		// int mul( int a, int b ){
+
+		// 	return a * b;
+		// }
+
+	</script>
+</body>
+</html>

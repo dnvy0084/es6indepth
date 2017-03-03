@@ -1,0 +1,62 @@
+<html>
+<head>
+	<title>rest and default parameter</title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		/**
+		 * 고전 스타일로 arguments를 이용하는 형식. 
+		 * @param  {[type]} collection [description]
+		 * @return {[type]}            [description]
+		 */
+		function containsAll( collection ){
+
+			for( var i = 1; i < arguments.length; i++ ){
+				
+				if( collection.indexOf( arguments[i] ) == -1 ) return false;
+			}
+
+			return true;
+		}
+
+		/**
+		 * rest parameter와 for..of loop를 이용하여 작성. 
+		 * @param  {[type]}    collection [description]
+		 * @param  {...[type]} elements   [description]
+		 * @return {[type]}               [description]
+		 */
+		function containsAll2( collection, ...elements ){
+
+			for( let e of collection ){
+
+				if( collection.indexOf( e ) == -1 ) return false;
+			}
+
+			return true;
+		}
+
+		console.log( containsAll( [ 1,2,3,4,5,6 ], 3, 4, 5 ) );
+		console.log( containsAll( [ 1,2,3,4,5,6 ] ) );
+
+
+		defaultParam(); // 1, 2
+		defaultParam( 3, 4 ); // 3, 4
+
+		function defaultParam( a = 1, b = 2 ){
+
+			console.log( a, b );
+		}
+
+
+		calcDefaultValue( 1 ) // 1, 2;
+		calcDefaultValue( 2 ) // 2, 3;
+
+		function calcDefaultValue( a = 1, b = a == 1 ? 2 : 3 ){
+
+			console.log( a, b );
+		}
+
+	</script>
+</body>
+</html>
