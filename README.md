@@ -68,6 +68,7 @@ ES6 in Depth
 ##### const
 
 * 상수 선언 키워드이다. 
+* let과 동일하게 블록 스코프를 가진다. 
 * 선언과 동시에 할당을 해야한다. 
 * const 상수에 값을 할당하면 에러이다. 
 * 값을 할당하지 않는 const 선언은 에러이다. 
@@ -96,7 +97,7 @@ ES6 in Depth
      
             for( var i = 1; i < arguments.length; i++ ){
                 
-                if( collection.indexOf( argumens[i] ) == -1 ) return false;
+                if( collection.indexOf( arguments[i] ) == -1 ) return false;
             }
     
             return true;
@@ -139,6 +140,104 @@ ES6 in Depth
 
 [Template String](http://hacks.mozilla.or.kr/2015/08/es6-in-depth-template-strings-2/)
 ----
+
+##### 백틱(Backtick) 문자열
+
+* 템플릿 스트링은 `` ` `` 문자로 감싼 문자열이다. 
+
+        let templateString = `this is template string.`;
+
+* 일반 문자열과 똑같이 `+`로 concat 가능하며 일반 문자열과 템플릿 스트링 간의 concat도 가능하다. 
+
+        templateString += `another templateString` + "normal string";
+
+* `${}`을 통해 문자열을 채워넣을 수 있다. `${}`을 템플릿 대입문이라 하며 javascript의 모든 구문이 허용된다. 
+* 템플릿 문자열에서 백틱문자를 `` ` `` 사용해야 할 경우 역슬래시로 `` \` `` 이스케이프 할 수 있다. 
+* 템플릿 문자열에서 템플릿 대입문의 문자열을 사용할 경우에도 역슬래시로 이스케이프 (`\${` 혹은 `$\{`)가능하다. 
+
+        let name = 'kim.jinhonn',
+            age = 30;
+
+        let t = `I\`m ${name}. and I\`m ${age} years old.`;
+
+        console.log( t ); // I`m kim.jinhonn. and I`m 30 years old.
+
+* 일반적인 문자열과 다르게 화이트 스페이스를 그대로 표현한다. 
+        
+        let paragraph = `
+          <h1>Title</h1>
+          <p>Unauthorized hockeying can result in penalties
+          of up to ${30} minutes.</p>
+        `;
+
+##### Tagged Template
+
+* tagged template은 template 문자열 앞에 tag를 붙여서 사용한다. 
+* tag에 저장된 함수를 호출한다. tag는 변수나 객체의 속성 함수 호출의 결과일 수도 있다. 
+* 대입문을 경계로 split된 배열과 대입문의 값을 ...rest 가변인자로 받는다. 
+
+        let name = 'Kim Jin Hoon';
+    
+        /**
+         * 언어별 문자열을 저장하고 있는 객체. 
+         * @type {Object}
+         */
+        const words = {
+
+            'hi' : [ '안녕 {0}', 'Hi {0}', '{0} صباح الخير.', 'Guten Morgen.  {0}' ],
+            'bye': [ '잘가 {0}', 'Bye {0}', 'وداعا. {0}', 'Bye. {0}' ],
+            'stop': [ '고만!', 'Stop!', 'توقف', 'Stopp' ]
+        };
+
+        /**
+         * i18n 함수를 초기화 하는 함수. 
+         * 1. 클로져로 구현하여 countryCode와 words에 대한 접근을 제한한다. 
+         * @param  {[type]} countryCode [description]
+         * @param  {[type]} words       [description]
+         * @return {[type]}             [description]
+         */
+        function initializeI18n( countryCode, words ){
+
+            return function( template, ...rest ){
+
+                let key = template[0].replace( /\s+/g, '' );
+
+                if( !words.hasOwnProperty( key ) )
+                    throw new Error( 'Error' );
+
+                let string = words[ key ][ countryCode ];
+
+                return string.replace( /\{[0-9]+\}/g, c => rest[ c.match( /\d+/g )[0] ] );
+            }
+        }
+
+        const i18n = initializeI18n( 1, words );
+    
+        console.log( i18n`hi ${name}` ); // Hi Kim Jin Hoon
+        console.log( i18n`bye ${name}` ); // Bye Kim Jin Hoon 
+        console.log( i18n`stop` ); // Stop!
+
+        console.log( initializeI18n( 3, words )`stop` ); // Stopp
+
+* tag 함수에서 template 인자의 raw 배열을 통해 입력된 문자가 escape 되기 전 문자열에 접근할 수 있다. 
+    
+        /**
+         * template의 문자열 길이와 template.raw의 문자열 길이 비교 테스트
+         * @param  {[type]}    template [description]
+         * @param  {...[type]} rest     [description]
+         * @return {[type]}             [description]
+         */
+        function rawTest( template, ...rest ){
+
+            template.forEach( 
+                (s, i, _) => log( '_(_), _(_)', s, s.length, template.raw[i], template.raw[i].length ) 
+            );
+        }
+
+* String.raw는 ES6에 내부적으로 구현된 유일한 tag이다. 
+* template의 raw 속성과 같이 escape 되기 전 string으로 반환한다. 
+
+        String.raw `\n\t`.length; // 4
 
 [Arrow Functions](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-arrow-functions/)
 ----
