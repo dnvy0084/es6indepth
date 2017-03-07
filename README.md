@@ -241,6 +241,131 @@ ES6 in Depth
 
 [Arrow Functions](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-arrow-functions/)
 ----
+##### javascript의 함수
+
+* ES5 버전까지 javascript에서 함수 선언을 위해 function 키워드가 필요하다. 
+
+        // function declaration
+        function f( a, b ){
+            return a + b;
+        }
+
+        // function expression
+        var f = function( a, b ){
+            return a + b;
+        }
+
+        // function constructor
+        var f = new Function( 'a', 'b', 'a + b' );
+
+* function constructor를 이용하는 방식은 function expression과 동일하다고 볼 수 있다. 
+* function declaration은 javascript의 호이스팅에 의해 선언전에 사용할 수 있다. 
+* function expression은 f라는 변수가 선언은 되지만 할당되지 않은 상태이기에 할당 전에 호출 할 수 없다. 
+        
+        sum( 1, 2 ); // 3
+        add( 1, 2 ); // 에러
+
+        function sum( a, b ){
+            return a + b;
+        }
+
+        var add = function( a, b ){
+            return a + b;
+        }
+
+##### 람다함수
+
+* 1930년대 알론조 처치가 고안한 수학 모델 [람다대수](https://ko.wikipedia.org/wiki/%EB%9E%8C%EB%8B%A4_%EB%8C%80%EC%88%98)에서 유래했다. 
+* 프로그램 언어에서 람다 함수는 함수의 축약 표현식이라고 볼 수 있다. 
+* 함수를 일급객체로 사용하는 언어가 늘어나면서 최근에는 람다 함수가 트랜드가 됐다.
+
+        // 6개 랭귀지의 아주 간단한 함수 표현식.
+        function (a) { return a > 0; } // JS
+
+        [](int a) { return a > 0; }  // C++
+
+        (lambda (a) (> a 0))  ;; Lisp
+
+        lambda a: a > 0  # Python
+
+        a => a > 0  // C#
+
+        a -> a > 0  // Java
+
+##### 화살표 함수(Arrow Function)
+
+* ES6 버전부터 javascript도 함수를 한줄로 **짧게** 선언할 수 있다. 
+* Identifier => Expression으로 선언한다. 
+        
+        ( a, b ) => a + b;
+
+* 한줄로 작성하고 `{}`이 없을 경우 값을 항상 return한다.(return keyword를 생략해야 한다!)
+        
+        const f = a => a; 
+        
+        f(3); //3;
+
+* 보통은 익명 함수로 사용하나, function expression처럼 변수에 할당하여 사용할 수도 있다. 
+        
+        const sum = ( a, b ) => a + b;
+
+* 함수 인자가 1개일 경우 괄호를 생략 가능하다. 
+        
+        a => a * a; // square
+
+* 함수 인자가 없거나 2개 이상일 경우 그리고 가변인자를 사용할 경우 괄호가 필요하다. 
+
+        () => console.log( 'empty call' ); // empty call
+
+        ( a, b, c ) => a + b + c; // addAll
+
+        ( ...rest ) => rest.reduce( ( a, b ) => a + b, 0 ); //addAll
+
+* 함수 본문이 2줄 이상인 경우 `{}`으로 감싸야 한다. 
+    
+        ( iterator, needles ) => {
+
+            for( let o of needles ){
+                if( iterator.indexOf( o ) === -1 ) return false;
+            }
+
+            return true;
+        }
+
+* `{}` 블럭으로 감싼 경우 값을 반환하려면 본문 줄 수에 상관없이 `return` keyword를 사용해야 한다.
+        
+        const f = a => { return a }; // f(3) -> 3;
+
+        const f2 = a => { a }; // f2(3) -> undefined;
+
+* Arrow Function에서 this는 자신을 감싸는 외부 block scope의 this 객체를 받는다. 
+
+        const caller = {
+
+            f: function( o ){
+
+                const call = () => {
+                    console.log( this, this === o );
+                }
+
+                function call2(){
+                    console.log( this, this === o );
+                }
+
+                this.call3 = call2;
+
+                call(); // caller, true
+                call2(); // window, false
+                this.call3(); // caller, true;
+            }
+        }
+
+* Arrow Function에서는 arguments 객체가 전달되지 않는다. 
+    
+        const args = () => console.log( arguments );
+        
+        args(); //Uncaught ReferenceError: arguments is not defined
+
 
 [HigherOrder Functions](https://ko.wikipedia.org/wiki/%EA%B3%A0%EC%B0%A8_%ED%95%A8%EC%88%98)
 ----

@@ -1,0 +1,61 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		// function decalaration
+		function f( a, b ){
+			return a + b;
+		}
+
+		// function expression
+		var f = function( a, b ){
+			return a + b;
+		}
+
+		// function constructor
+		var f = new Function( 'a', 'b', 'a + b' );
+
+
+		sum( 1, 2 );
+		// add( 1, 2 );
+
+		function sum( a, b ){
+			return a + b;
+		}
+
+		var add = function( a, b ){
+			return a + b;
+		}
+
+		const sum2 = ( a, b ) => a + b;
+
+		const caller = {
+
+			f: function( o ){
+
+				const call = () => {
+					console.log( this, this === o );
+				}
+
+				function call2(){
+					console.log( this, this === o );
+				}
+
+				this.call3 = call2;
+
+				call();
+				call2();
+				this.call3();
+			}
+		}
+
+		caller.f( caller );
+
+		const args = () => console.log( arguments );
+
+	</script>
+</body>
+</html>
