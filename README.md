@@ -366,6 +366,10 @@ ES6 in Depth
         
         args(); //Uncaught ReferenceError: arguments is not defined
 
+* Object 객체를 return할 경우 괄호가 필요하다. 
+
+        const plus1 = p => ({ x: p.x + 1, y: p.y + 1 });
+
 
 [HigherOrder Functions](https://ko.wikipedia.org/wiki/%EA%B3%A0%EC%B0%A8_%ED%95%A8%EC%88%98)
 ----
@@ -536,17 +540,185 @@ ES6 in Depth
             return reduce( collection, (a, b, k, _) => a || callback( b, k, _ ), false );
         }
 
-[Collections](http://hacks.mozilla.or.kr/2015/12/es6-in-depth-collections/)
+[Iterator and for..of loop](http://hacks.mozilla.or.kr/2015/08/es6-in-depth-iterators-and-the-for-of-loop/)
 ----
 
 [Symbol](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-symbols/)
 ----
 
-[Iterator and for..of loop](http://hacks.mozilla.or.kr/2015/08/es6-in-depth-iterators-and-the-for-of-loop/)
-----
-
 [Destructuring](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-destructuring/)
 ----
+
+[Collections](http://hacks.mozilla.or.kr/2015/12/es6-in-depth-collections/)
+----
+
+##### Collection
+
+* javascript에는 이미 hash-table 처럼 사용할 수 있는 Object가 있지만 몇몇의 경우 문제가 있다. 
+* 완벽히 빈 객체를 생성해야 할 때 `{}` 대신 `Object.create(null)`을 사용해야 한다. 
+
+        console.log( {} ); // __proto__ 객체를 가지고 있다. 
+        console.log( Object.create( null ) ); // 빈 객체이다. 
+
+* 속성 key는 언제나 문자열이어야 한다. 
+* 객체에 얼마나 많은 속성이 존재하는지 알아내기 위해 for..in loop가 필요하다. 
+
+        const o = Object.create( null );
+
+        o.a = 1;
+        o.b = 2;
+        o.c = 3;
+
+        let n = 0;
+
+        for( let k in o ) ++n;
+
+        console.log( n ); // 3
+
+* 이터러블(iterable) 하지 않기 때문에, for..of, 비구조화 할당등을 사용할 수 없다. 
+
+##### Set
+
+* new Set() 구문은 비어 있는 새로운 set 을 만든다.
+* new Set(iterable) 구문은 새로운 set 을 만들고 인자로 전달된 이터러블(iterable)로 데이터를 채운다.
+
+        let set = new Set( [ 1,2,3,4,5,1,2,3,4,5 ] ); // 새로운 셋을 생성하여 배열의 데이터로 채운다.
+
+* `set.size` 구문은 set 안에 담겨 있는 데이터의 개수를 조회한다.
+        
+        console.log( set.size ); // 중복 요소가 제거되어 set의 크기는 5이다. 
+
+* `set.has(value)` 구문은 주어진 값이 set 안에 존재할 경우 true 를 반환한다.
+
+        console.log( set.has( 4 ) ); // true;
+        console.log( set.has( 6 ) ); // false;
+
+* `set.add(value)` 구문은 주어진 값을 set 에 추가한다. 만약 그 값이 이미 set 안에 존재하면 아무 일도 일어나지 않는다.
+
+        console.log( set.add( 5 ).size ); // 중복된 요소를 추가하여 크기는 변하지 않는다. 
+        console.log( set.add( 6 ).size ); // 중복되지 않는 요소를 추가하여 크기는 6이다;
+
+* `set.delete(value)` 구문은 set 에서 주어진 값을 제거한다. 만약 그 값이 set 안에 존재하지 않으면 아무 일도 일어나지 않는다. .add() 구문과 .delete() 구문은 모두 set 객체 자신을 리턴하니 구문을 체인(chain) 시킬 수 있다.
+
+        console.log( set.delete( 7 ).size ); // 없는 원소를 제거하여 크기는 변하자 않는다.
+        console.log( set.delete( 6 ).size ); // 마지막으로 추가된 원소를 제거하여 크기는 5이다. 
+
+* `set[Symbol.iterator]()` 구문은 set 안의 값들을 순회할 수 있는 새로운 이터레이터를 리턴한다. 보통의 경우 이 메소드를 직접 호출할 일은 없지만 이 메소드의 존재 때문에 set 은 이터러블(iterable) 하다. 즉, for (v of set) {...} 같은 구문을 쓸 수 있다.
+* set.forEach(f)는 array의 forEach와 동일하다.
+* set.clear() 구문은 set 안의 모든 데이터를 제거한다.
+
+         set.clear(); // 모든 데이터를 제거한다. 자신을 return하지 않는다.
+
+* `set.keys(), set.values(), set.entries()` 구문은 다양한 이터레이터들을 리턴한다. 이 이터레이터들은 Map 과의 호환성을 위해 제공된다. 
+* array의 map, filter, reduce 등 util 함수들이 제공되지 않는다. 직접 구현. 
+        
+        /**
+         * f를 실행한 결과값을 원소로 가지는 새로운 set 객체 반환
+         * @param  {[type]} f [description]
+         * @return {[type]}   [description]
+         */
+        Set.prototype.map = function( f ){
+
+            let set = new Set();
+
+            this.forEach( ( v, k, c ) => set.add( f(v, k, c) ) );
+
+            return set;
+        }
+
+        /**
+         * f를 실행한 결과값이 true인 원소를 가지는 새로운 set 객체 반환. 
+         * @param  {[type]} f [description]
+         * @return {[type]}   [description]
+         */
+        Set.prototype.filter = function( f ){
+
+            let set = new Set();
+
+            this.forEach( ( v, k, c ) => {
+
+                if( f( v, k, c ) )
+                    set.add( v );
+            });
+
+            return set;
+        }
+
+        /**
+         * 원소를 순회하며 f를 실행한 결과값 반환. 
+         * @param  {[type]} f            [description]
+         * @param  {[type]} initialvalue [description]
+         * @return {[type]}              [description]
+         */
+        Set.prototype.reduce = function( f, initialvalue = undefined ){
+
+            let i = initialvalue;
+
+            this.forEach( ( v, k, c ) =>{
+
+                if( i == undefined ){
+                    i = v;
+                    return;
+                }
+
+                i = f( i, v, k, c );
+            });
+
+            return i;
+        }
+        
+##### Map
+
+* `new Map` 구문은 비어 있는 새로운 map 을 만든다.
+* `new Map(pairs)` 구문은 새로운 map 을 만들고 그 데이터를 기존의 [key, value] 페어 컬렉션으로 채운다. pairs 인자는 기존의 Map 객체일 수도 있고, 2개의 엘리먼트를 가진 배열들로 구성된 배열일 수도 있으며, 2개의 엘리먼트를 yield 하는 제너레이터일 수도 있다.
+    
+        let map = new Map( [ ['a', 1], ['b', 2], ['c', 3], ['d', 4], ['e', 5] ] );
+
+* `map.size` 구문은 map 에 담겨진 엔트리들의 개수를 조회한다.
+        
+        map.size; //5
+
+* `map.has(key)` 구문은 주어진 key 가 존재하는지 확인합니다 (key in obj 구문처럼요).
+    
+        map.has( 'f' ); // false;
+        map.has( 'a' ); // false;
+
+* `map.get(key)` 구문은 key 와 연관된(associated) value 를 리턴한다. 만약 그런 엔트리가 존재하지 않을 경우 undefined 를 리턴한다.
+        
+        map.get( 'f' ); //undefined;
+        map.get( 'a' ); //1;
+
+* `map.set(key, value)` 구문은 map 에 key 와 value 엔트리를 추가한다. 같은 key 를 갖는 엔트리가 이미 존재할 경우 기존의 데이터를 덮어쓴다.
+
+        map.set( 'f', 6 );
+        map.set( 'a', 0 );
+
+* `map.delete(key)` 구문은 엔트리를 삭제한다. 
+
+        map.delete( 'f' );
+
+* `map.clear()` 구문은 map 안의 모든 엔트리들을 제거한다.
+
+        map.clear();
+
+* `map[Symbol.iterator]()` 구문은 map 안의 엔트리들을 순회할 수 있는 이터레이터를 리턴한다. 해당 이터레이터는 엔트리 항목 각각을 [key, value] 배열로 표현한다.
+
+* `map.forEach(f)` 구문은 다음과 같이 동작한다. 인자 순서가 이상한 것은 Array.prototype.forEach() 구문과 통일성을 유지하기 위해서이다.
+
+        for (let [key, value] of map)
+            f(value, key, map);
+
+* `map.keys()` 구문은 map 안의 key 들을 순회할 수 있는 이터레이터를 리턴한다.
+
+        for( let k of map.keys() )
+            console.log( k );
+
+* `map.values()` 구문은 map 안의 value 들을 순회할 수 있는 이터레이터를 리턴한다.
+
+        for( let v of map.values() )
+            console.log( v );
+
+* `map.entries()` 구문은 map 안의 모든 엔트리들을 순회할 수 있는 이터레이터를 리턴한다. `map[Symbol.iterator]()` 구문과 똑같다. 사실 이것은 동일한 메소드에 대한 다른 명칭일 뿐이다.
 
 [Generator](http://hacks.mozilla.or.kr/2015/08/es6-in-depth-generators/)
 ----
