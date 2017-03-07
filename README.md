@@ -370,6 +370,172 @@ ES6 in Depth
 [HigherOrder Functions](https://ko.wikipedia.org/wiki/%EA%B3%A0%EC%B0%A8_%ED%95%A8%EC%88%98)
 ----
 
+##### 정의
+
+* 함수를 인자로 받거나 결과로 반환하는 함수를 고차 함수라 한다. 
+* 함수를 일급 객체로 취급하는 JS는 고차함수를 사용할 수 있다. 
+
+##### Array에 구현된 고차함수
+
+* forEach - 배열을 순회하며 callback을 실행한다. 
+        
+        const array = [ 1,2,3,4,5,6,7,8,9,10 ];
+
+        array.forEach( n => console.log(n) );
+
+* map - 배열을 순회하며 callback의 결과값을 새로운 배열을 반환한다. 
+
+        let squaredList = array.map( n => n * n );
+
+* filter - 배열을 순회하며 callback 결과값이 true인 원소만 담은 새로운 배열을 반환한다. 
+    
+        let oddList = array.filter( n => n % 2 );
+
+* reduce - 배열을 순회하며 callback 결과값을 반환한다. 
+
+        let sum = array.reduce( (a, b) => a + b, 0 );
+
+* every - 배열을 순회하며 callback의 결과 bool값이 모두 true일 경우 true를 반환한다. 
+
+        let bool = array.every( n => n > 0 ); // true,
+
+* some - 배열을 순회하며 callback의 결과 bool값에 하나라도 true가 있을 경우 true를 반환한다. 
+
+        let bool = array.some( n => n > 100 ) // false;
+
+* sort - 배열을 정렬한다. a, b 두 개 인자 중 a가 작으면 -1을 같으면 0을 b가 크면 1을 반환해야 안다. 
+
+        array.sort( (a,b) => a < b ? -1 : a > b );
+
+##### Object용 고차함수
+
+* each - map을 순회하며 callback을 실행한다.
+    
+        /**
+         * map을 순회하며 callback을 실행한다. 
+         * @param  {[type]}   collection [description]
+         * @param  {Function} callback   [description]
+         * @return {[type]}              [description]
+         */
+        function each( collection, callback ){
+
+            if( collection instanceof Array ){
+
+                collection.forEach( callback );
+            }
+            else{
+
+                for( var key in collection ){
+
+                    callback( collection[key], key, collection );
+                }
+            }
+        }
+
+* map - 맵을 순회하며 실행한 콜백의 반환값을 원소로 하는 맵을 반환한다. 
+
+        /**
+         * 맵을 순회하며 실행한 콜백의 반환값을 원소로 하는 맵을 반환한다. 
+         * @param  {[type]}   collection [description]
+         * @param  {Function} callback   [description]
+         * @return {[type]}              [description]
+         */
+        function map( collection, callback ){
+
+            if( collection instanceof Array )
+                return collection.map( callback );
+
+            let o = {};
+
+            each( collection, ( v, k, c ) => o[k] = callback( v, k, c ) );
+
+            return o;
+        }
+
+* filter - 맵을 순회하며 실행한 콜백이 true인 원소들을 맵으로 반환한다. 
+    
+        /**
+         * 맵을 순회하며 실행한 콜백이 true인 원소들을 맵으로 반환한다. 
+         * @param  {[type]}   collection [description]
+         * @param  {Function} callback   [description]
+         * @return {[type]}              [description]
+         */
+        function filter( collection, callback ){
+
+            if( collection instanceof Array )
+                return collection.filter( callback );
+
+            let o = {};
+
+            each( collection, ( v, k, _ ) => {
+
+                if( callback( v, k, _ ) ) o[k] = v;
+            });
+
+            return o;
+        }
+
+* reduce - 맵을 순회하여 실행한 콜백 값을 반환한다.
+
+        /**
+         * 맵을 순회하여 실행한 콜백 값을 반환한다. 
+         * @param  {[type]}   collection   [description]
+         * @param  {Function} callback     [description]
+         * @param  {[type]}   initialValue [description]
+         * @return {[type]}                [description]
+         */
+        function reduce( collection, callback, initialValue = undefined ){
+
+            if( collection instanceof Array )
+                return collection.reduce( callback, initialValue );
+
+            let i = initialValue;
+
+            each( collection, ( v, k, _ ) => {
+
+                if( i == undefined ) {
+                    i = v;
+                    return;
+                }
+
+                i = callback( i, v, k, _ );
+            });
+
+            return i;
+        }
+
+* every - 맵을 순회하여 실행한 callback이 모두 true일 경우 true를 반환한다. 
+    
+        /**
+         * 맵을 순회하여 실행한 callback이 모두 true일 경우 true를 반환한다. 
+         * @param  {[type]}   collection [description]
+         * @param  {Function} callback   [description]
+         * @return {[type]}              [description]
+         */
+        function every( collection, callback ){
+
+            if( collection instanceof Array )
+                return collection.every( callback );
+
+            return reduce( collection, (a, b, k, _) => a && callback( b, k, _ ), true );
+        }
+
+* some - 맵을 순회하여 실행한 callback 결과값 중 하나라도 true일 경우 true를 반환한다. 
+
+        /**
+         * 맵을 순회하여 실행한 callback 결과값 중 하나라도 true일 경우 true를 반환한다. 
+         * @param  {[type]}   collection [description]
+         * @param  {Function} callback   [description]
+         * @return {[type]}              [description]
+         */
+        function some( collection, callback ){
+
+            if( collection instanceof Array )
+                return collection.some( callback );
+
+            return reduce( collection, (a, b, k, _) => a || callback( b, k, _ ), false );
+        }
+
 [Collections](http://hacks.mozilla.or.kr/2015/12/es6-in-depth-collections/)
 ----
 
