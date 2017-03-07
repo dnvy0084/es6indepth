@@ -543,6 +543,24 @@ ES6 in Depth
 [Iterator and for..of loop](http://hacks.mozilla.or.kr/2015/08/es6-in-depth-iterators-and-the-for-of-loop/)
 ----
 
+##### for..of 반복문
+
+* 기존 반복문의 종류는 다음과 같다. 
+        
+        // 전통적인 for loop
+        let a = [ 1,2,3,4,5 ];
+
+        for( var i = 0; i < a.length; i++ ){
+            console.log( a[i] );
+        }
+        
+        // es5의 array 고차함수. 
+        a.forEach( n => console.log(n) );
+    
+        // for..in 반복문. 
+        for( var key in a ) console.log( a[key] );
+
+
 [Symbol](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-symbols/)
 ----
 
