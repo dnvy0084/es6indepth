@@ -1,0 +1,64 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		const types = [ 1, 'type', true, {}, null, undefined ];
+
+		for( let v of types ) console.log( v, typeof v );
+
+
+		const sym = Symbol();
+
+		console.log( sym, typeof sym );
+
+		console.log( Symbol() ); // Symbol()
+		console.log( Symbol( 'test' ) ); // Symbol(test)
+
+		// 인자인 string은 toString시 알아보기 위한 주석의 의미이다. 
+		console.log( Symbol( 'test' ) === Symbol( 'test' ) ); // false
+
+		// internal 함수나 protected
+		console.log( Symbol.for( 'test' ) === Symbol.for( 'test' ) ) // true;
+
+		const globalSym = Symbol.for( 'test' );
+
+		console.log( Symbol.keyFor( globalSym ) ); // test
+
+		console.log( Symbol.iterator, Symbol.keyFor( Symbol.iterator ) );
+
+		const key = Symbol( 'key' );
+		const call = Symbol( 'call' );
+		const o = {};
+
+		o[ key ] = 10;
+
+		let o2 = {
+			x: 10, 
+			y: 20,
+			[ key ]: 30
+		}
+
+		function Point( x = 0, y = 0 ){
+
+			this.x = x;
+			this.y = y;
+
+			this[key] = 'test';
+		}
+
+		Point.prototype = {
+			[ call ]: function(){
+				console.log( 'call point[Symbol] method' );
+
+				return this;
+			}
+		}
+
+		console.log( o[key], o2[key], new Point()[key], new Point()[ call ]() );
+
+	</script>
+</body>
+</html>

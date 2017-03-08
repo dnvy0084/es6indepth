@@ -540,6 +540,85 @@ ES6 in Depth
             return reduce( collection, (a, b, k, _) => a || callback( b, k, _ ), false );
         }
 
+[Symbol](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-symbols/)
+----
+
+##### Symbol
+
+* Symbol은 ES6에서 javascript에 추가된 7번째 type이다. 
+* 기존의 타입은 다음과 같다. 
+    
+        const types = [ 1, 'type', true, {}, null, undefined ];
+
+        for( let v of types ) 
+            console.log( v, typeof v );
+        /*
+            1 "number"
+            type string
+            true "boolean"
+            Object {} "object"
+            null "object"
+            undefined "undefined"
+        */
+
+* Symbol은 객체 속성의 key 값으로 사용하기 위한 새로운 type이다. 
+* `object[ 'key' ] = value;`로 속성을 추가하듯이 `object[Symbol()] = value;` 처럼 사용할 수 있다. 
+* `Symbol()` 메소드로 심볼을 생성할 경우 항상 고유의 값을 가진다. 
+
+##### Symbol 객체 생성
+
+* `Symbol()`을 호출한다. 이 메소드는 항상 고유의 심볼을 반환한다. 
+
+        console.log( Symbol() ); // Symbol()
+        console.log( Symbol( 'test' ) ); // Symbol(test)
+
+        // 인자인 string은 toString시 알아보기 위한 주석의 의미이다. 
+        console.log( Symbol( 'test' ) === Symbol( 'test' ) ); // false
+
+* `Symbol.for( string )`을 호출한다. 이 메소드는 심볼 레지스트리를 참조하여 같은 string의 심볼을 반환한다. 
+
+        console.log( Symbol.for( 'test' ) === Symbol.for( 'test' ) ) // true;
+
+* `Symbol.keyFor( symbol )`로 symbol 생성에 사용된 string을 가져올 수 있다. 다만 이 메소드는 `Symbol.for`를 통해 생성된 전역 심볼 객체에 한한다. 
+
+        const globalSym = Symbol.for( 'test' );
+        
+        console.log( Symbol.keyFor( globalSym ) ); // test        
+
+* Symbol.iterator 처럼 표준에 의해 정의된 심볼을 사용할 수 있다. 표준에 의해 정의된 심볼들은 나름의 특별한 용도가 있다.
+
+* 다음과 같이 대괄호 연산자를 통해 속성을 추가한다. 
+
+        const key = Symbol( 'key' );
+        const call = Symbol( 'call' );
+        const o = {};
+
+        o[ key ] = 10;
+
+        let o2 = {
+            x: 10, 
+            y: 20,
+            [ key ]: 30
+        }
+
+        function Point( x = 0, y = 0 ){
+
+            this.x = x;
+            this.y = y;
+
+            this[key] = 'test';
+        }
+
+        Point.prototype = {
+            [ call ]: function(){
+                console.log( 'call point[Symbol] method' );
+
+                return this;
+            }
+        }
+
+        console.log( o[key], o2[key], new Point()[key], new Point()[ call ]() );
+
 [Iterator and for..of loop](http://hacks.mozilla.or.kr/2015/08/es6-in-depth-iterators-and-the-for-of-loop/)
 ----
 
@@ -666,8 +745,6 @@ ES6 in Depth
         }
         
 
-[Symbol](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-symbols/)
-----
 
 [Destructuring](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-destructuring/)
 ----
@@ -801,7 +878,7 @@ ES6 in Depth
         
         map.size; //5
 
-* `map.has(key)` 구문은 주어진 key 가 존재하는지 확인합니다 (key in obj 구문처럼요).
+* `map.has(key)` 구문은 주어진 key 가 존재하는지 확인한다 (key in obj 구문처럼요).
     
         map.has( 'f' ); // false;
         map.has( 'a' ); // false;
