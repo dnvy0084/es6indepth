@@ -1,0 +1,154 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		function return0(){
+
+			return {
+
+				[ Symbol.iterator ]: function(){
+					return this;
+				},
+
+				next: function(){
+
+					return { value: 0, done: false };
+				}
+			}
+		};
+
+		function range( a = 0, b = Number.MAX_SAFE_INTEGER ){
+
+			return {
+				[ Symbol.iterator ](){
+					return {
+						next(){
+							if( a > b ) return { done: true };
+
+							return { value: a++, done: false };
+						}
+					}
+				}
+			}
+		}
+
+		let [ k, l, m, n ] = range( 5, 10 );
+
+		function* range2( a, b ){
+
+			for( ; a <= b; a++ ) yield a;
+		}
+
+		const array = [ 1,2,3,4,5 ];
+
+		let a = array[0],
+			b = array[1],
+			c = array[2];
+
+		[ a, b, c ] = array;
+
+		let [ d, e ] = array;
+		[ , , , d, e ] = array;
+
+		[ a, b, c, d, e ] = return0();
+
+		function fibonaci(){
+
+			let [ a, b, t ] = [ 0, 1 ];
+
+			return {
+
+				[Symbol.iterator](){
+					return this;
+				},
+
+				next(){
+
+					t = a + b;
+					[ a, b ] = [ b, t ]; 
+
+					return { value: t, done: false };
+				}
+			}
+		}
+
+		for( let n of fibonaci() ){
+
+			if( n > 200 ) break;
+			console.log( n );
+		}
+
+
+		const ordered = {
+			a: 1, b: 2, c: 3, d: 4, e: 5
+		};
+
+		let { a: varA } = ordered;
+		let { b: varB, c: varC } = ordered;
+
+		console.log( varA, varB, varC );
+
+		( { a, b, c, d, e } = ordered );
+
+		function rotate( t, {x, y} ){
+
+			let cos = Math.cos(t),
+				sin = Math.sin(t);
+
+			[ x, y ] = [
+				cos * x - sin * y,
+				sin * x + cos * y
+			];
+
+			return { x: x, y: y };
+		}
+
+		function multiResult(){
+
+			return [ 1, 2, 3, 4 ]
+		}
+
+		console.log( rotate( Math.PI, {x: 20, y: 0} ) );
+
+		function initialize({
+			async = true,
+			beforeSend = noop,
+			cache = true,
+			complete = noop,
+			crossDomain = false,
+			global = true,
+			// ... more config
+		}){
+			// 함수 본문
+		}
+
+
+		function Point( x = 0, y = 0 ){
+			this.x = x;
+			this.y = y;
+		}
+
+		Point.prototype = {
+
+			[Symbol.iterator](){
+
+				let a = [ this.x, this.y ];
+
+				return {
+
+					next(){
+
+						if( a.length == 0 ) return { done: true };
+
+						return { value: a.shift(), done: false };
+					}
+				}
+			}
+		}
+
+	</script>
+</body>
+</html>

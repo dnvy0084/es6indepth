@@ -749,6 +749,144 @@ ES6 in Depth
 [Destructuring](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-destructuring/)
 ----
 
+##### 비구조화 할당(destructuring)
+
+* destructuring은 배열 형태와 object 형태 두 가지가 있다.
+* ES6 import 구문에서 이미 객체 형태의 비구조화 할당을 사용하고 있다. `import { rotate, distance } from 'path/to/module';`  
+
+###### 배열, Iterable 디스트럭쳐링
+
+* `const a = [ 1,2,3,4,5 ];`의 처음 3개 요소를 변수에 할당하려면 다음과 같다. 
+    
+        const array = [ 1,2,3,4,5 ];
+
+        let a = array[0],
+            b = array[1],
+            c = array[2];
+
+* 비구조화 할당을 이용하면 다음과 같이 할 수 있다. 
+
+        [ a, b, c ] = array;
+
+* 새롭게 선언하는 변수의 경우 let이나 var, const를 붙여준다. 
+
+        let [ d, e ] = array;
+
+* 다음과 같이 중첩된 배열안의 요소도 비구조화 할당 할 수 있다. 
+
+        let [ f, [ g, h ], i ] = [ 1, [ 10, 11 ], 2 ];
+
+* 순서를 건너뛰어 배열에 뒤에 있는 요소도 할당 할 수 있다. 
+
+        [ , , , d, e ] = array;
+
+* 없는 인덱스의 요소를 접근하면 undefined가 반환된다. 
+
+        [ , , a ] = [ 1, 2 ];
+
+* default 값이 있다면 값이 undefined일 경우 default 값으로 대체한다. 
+
+        [ a = 1, b = 2 ] = [];
+
+* 배열 형태의 비구조화 할당에는 iterable 객체가 필요하다. 
+* custom iterable 객체도 비구조화 할당 할 수 있다. 
+
+        function fibonaci(){
+
+            let [ a, b, t ] = [ 0, 1 ];
+
+            return {
+
+                [Symbol.iterator](){
+                    return this;
+                },
+
+                next(){
+
+                    t = a + b;
+                    [ a, b ] = [ b, t ]; 
+
+                    return { value: t, done: false };
+                }
+            }
+        }
+
+        for( let n of fibonaci() ){
+
+            if( n > 200 ) break;
+            console.log( n );
+        }
+
+##### 객체 디스트럭처링
+
+* 할당할 속성을 지정하고 할당할 변수를 지정한다. 
+
+        const ordered = {
+            a: 1, b: 2, c: 3, d: 4, e: 5
+        };
+
+        let { a: varA } = ordered;
+        let { b: varB, c: varC } = ordered;
+
+* 객체의 속성과 이름이 동일할 경우 약식 구문으로 사용할 수 있다. 
+
+        let { a, b, c, d, e } = ordered;
+
+* 기존에 선언된 변수에 할당할 경우 괄호가 필요하다. 객체 비구조화 할당은 `{`으로 시작하여 괄호가 없을 경우 syntax error 이다.  
+    
+        ( { a, b, c } = ordered );
+
+* 배열과 똑같이 패턴을 중첩시켜 사용할 수 있다. 
+
+        const complicated = { array: [ 1, { second: 2 } ] };
+        
+        let { array: [ a, { second } ] } = complicated;
+
+* 배열과 같이 없는 값에 접근할 경우 undefined이다. 
+    
+        let { b } = { a: 1, c: 2 };
+
+* 배열의 경우와 같이 default 값을 지정할 수 있다. 
+    
+        let { b = 3 } = { a: 1, c: 2 };
+
+##### 활용
+
+* 객체의 속성에 담긴 값을 바로 가져올 수 있다. 
+
+        function rotate( t, {x, y} ){
+
+            let cos = Math.cos(t),
+                sin = Math.sin(t);
+
+            [ x, y ] = [
+                cos * x - sin * y,
+                sin * x + cos * y
+            ];
+
+            return { x: x, y: y };
+        }
+
+        console.log( rotate( Math.PI, {x: 20, y: 0} ) );
+
+* 설정 객체에 default 값을 줄 수 있다. 
+
+        function initialize({
+            async = true,
+            beforeSend = noop,
+            cache = true,
+            complete = noop,
+            crossDomain = false,
+            global = true,
+            // ... more config
+        }){
+            // 함수 본문
+        }
+
+* 여러개의 값을 반환하거나 객체를 반환하는 경우 속성에 저장된 값을 바로 할당 가능하다. 
+
+        let { x, y } = rotate( Math.PI / 2, point );
+
 [Collections](http://hacks.mozilla.or.kr/2015/12/es6-in-depth-collections/)
 ----
 
