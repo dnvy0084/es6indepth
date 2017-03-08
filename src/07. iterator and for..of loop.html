@@ -1,0 +1,104 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		const a = [ 1,2,3,4,5,6,7,8 ];
+
+		for( let n of a ){
+
+			if( n % 2 ) continue;
+
+			console.log( n );
+			
+			if( n > 6 ) break;
+		}
+		// 2, 4, 6, 8
+
+
+		const string = 'abcdef';
+
+		for( let c of string ){
+
+			console.log( c );
+		}
+		// a, b, c, d, e, f
+		
+		console.log( [][Symbol.iterator]() ); // Array Iterator {}
+		console.log( new Map()[Symbol.iterator]() ); // MapIterator {}
+		console.log( new Set()[Symbol.iterator]() ); // SetIterator {}
+		console.log( 'test'[Symbol.iterator]() ); // StringIterator {}
+
+		let iter = [1,2,3,4,5][Symbol.iterator]();
+
+		for( let result = iter.next(); !result.done; result = iter.next() ){
+
+			console.log( iter.value );
+		}
+
+
+		console.log( iter.next() ); //{value: 1, done: false}
+
+		function infinity(){
+
+			let n = 0;
+
+			return {
+
+				[Symbol.iterator]: function(){
+					return {
+						next: function(){
+							return { value: n++, done: false };		
+						}
+					};
+				}
+			}
+		}
+
+		for( let n of infinity() ){
+
+			console.log(n);
+
+			if( n > 10 ) break;
+		}
+
+
+		function range( a, b, n = 1 ){
+
+			return {
+
+				[ Symbol.iterator ]: function(){
+					return this;
+				},
+
+				next: function(){
+
+					if( a > b ) return { done: true };
+
+					let t = a;
+					a += n;
+
+					return { value: t, done: false };
+				}
+			}
+		}
+
+		for( let n of range( 2, 10, 3 ) ){
+			console.log(n);
+		}
+
+
+		let siter = 'abcd'[Symbol.iterator]();
+		let result = siter.next();
+
+		while( !result.done ){
+			
+			console.log( result.value );
+			result = siter.next();
+		}
+
+	</script>
+</body>
+</html>

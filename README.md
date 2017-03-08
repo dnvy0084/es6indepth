@@ -560,6 +560,111 @@ ES6 in Depth
         // for..in 반복문. 
         for( var key in a ) console.log( a[key] );
 
+* ES6에서 for..of 반복문이 추가되었다. 
+* for..of 반복문은 배열의 요소, 즉 data를 순회하기 위한 구문이다. 
+* forEach문과 달리 continue, break 를 지원하며 반복문을 감싸고 있는 함수를 return할 수도 있다.
+
+        const a = [ 1,2,3,4,5,6,7,8 ];
+
+        for( let n of a ){
+
+            if( n % 2 ) continue;
+
+            console.log( n );
+            
+            if( n > 6 ) break;
+        }
+        // 2, 4, 6, 8
+
+* for..of 반복문은 문자열도 다룰 수 있다. 
+    
+        const string = 'abcdef';
+
+        for( let c of string ){
+
+            console.log( c );
+        }
+        // a, b, c, d, e, f
+
+* for..of 반복문은 Map, Set 객체도 다룰 수 있다. 
+* 언급한 Array, String, Map, Set 객체는 모두 Iterable 객체이기 때문이다. 
+
+##### Iterable Object 
+
+* 약속된 함수로 반복자(iterator)를 반환하는 객체를 말한다. 
+* Array, String, Map, Set 모두 Symbol.iterator 함수가 선언되어 있고, `[Symbol.iterator]()` 호출 시 `{ next: function(){} }` 형식의 iterator 객체를 반환한다. 
+
+        console.log( [][Symbol.iterator]() ); // Array Iterator {}
+        console.log( new Map()[Symbol.iterator]() ); // MapIterator {}
+        console.log( new Set()[Symbol.iterator]() ); // SetIterator {}
+        console.log( 'test'[Symbol.iterator]() ); // StringIterator {}
+
+* iterator 객체는 next 함수를 가지고 있으며 `.next()` 호출 시 `{ value: , done: }` 형태의 객체를 반환한다. 
+
+        let iter = [1,2,3,4,5][Symbol.iterator]();
+
+        console.log( iter.next() ); //{value: 1, done: false}
+
+* for..of 반복문을 구현하면 다음과 같다. 
+    
+        let iter = [1,2,3,4,5][Symbol.iterator]();
+
+        for( let result = iter.next(); !result.done; result = iter.next() ){
+            
+            console.log( iter.value );
+        }
+
+* 객체에 custom iterator 함수를 추가할 수도 있다. 
+* 1씩 증가하는 무한 길이의 배열을 만들 수도 있다. 
+
+        function infinity(){
+
+            let n = 0;
+
+            return {
+                [Symbol.iterator]: function(){
+                    return {
+                        next: function(){
+                            return { value: n++, done: false };     
+                        }
+                    };
+                }
+            }
+        }
+
+        for( let n of infinity() ){
+            
+            console.log(n);
+
+            if( n > 10 ) break;
+        }
+
+* python의 range 함수도 만들 수 있다. 
+        
+        function range( a, b, n = 1 ){
+
+            return {
+
+                [ Symbol.iterator ]: function(){
+                    return this;
+                },
+
+                next: function(){
+
+                    if( a > b ) return { done: true };
+
+                    let t = a;
+                    a += n;
+
+                    return { value: t, done: false };
+                }
+            }
+        }
+
+        for( let n of range( 2, 10, 3 ) ){
+            console.log(n);
+        }
+        
 
 [Symbol](http://hacks.mozilla.or.kr/2015/09/es6-in-depth-symbols/)
 ----
