@@ -887,6 +887,14 @@ ES6 in Depth
 
         let { x, y } = rotate( Math.PI / 2, point );
 
+[Spread](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/Spread_operator)
+-----
+
+##### 전개 연산자
+
+* Iterable 객체 앞에 `...`을 사용하여 함수 인자나 배열 요소, 비구조화 할당 등에 사용할 수 있다. 
+* 함수의 인자를 Iterable 객체로 호출 할 수 있다. 
+
 [Collections](http://hacks.mozilla.or.kr/2015/12/es6-in-depth-collections/)
 ----
 

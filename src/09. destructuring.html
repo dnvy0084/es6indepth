@@ -135,17 +135,19 @@
 
 			[Symbol.iterator](){
 
-				let a = [ this.x, this.y ];
+				return [ this.x, this.y ][Symbol.iterator]();
 
-				return {
+				// let a = [ this.x, this.y ];
 
-					next(){
+				// return {
 
-						if( a.length == 0 ) return { done: true };
+				// 	next(){
 
-						return { value: a.shift(), done: false };
-					}
-				}
+				// 		if( a.length == 0 ) return { done: true };
+
+				// 		return { value: a.shift(), done: false };
+				// 	}
+				// }
 			}
 		}
 
