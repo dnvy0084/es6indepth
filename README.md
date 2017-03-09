@@ -1173,6 +1173,140 @@ ES6 in Depth
 [Generator](http://hacks.mozilla.or.kr/2015/08/es6-in-depth-generators/)
 ----
 
+##### 정의
+
+* 문법은 다음과 같다. 
+        
+        function* functionName( param ){
+
+            let returnValue = 10;
+
+            yield returnValue;
+        }
+
+* `function*` 키워드로 시작하며 `yield` 구문이 존재한다.
+* `yield`는 일반 함수의 `return`과 비슷한 역할을 한다. 
+* 제너레이터 함수의 `yield`는 `return`과 달리 여러번 실행할 수 있다. 
+* `yield`가 호출되면 함수를 멈췄다가 다시 시작할 수 있게 만든다. 
+* **generator는 실행을 멈췄다가 재시작할 수 있는 함수이다.**
+
+##### 제너레이터 함수
+
+* generator 함수는 iterable 객체와 같이 iterator를 반환한다. 
+
+        function* hello( name ){
+
+            yield 'a';
+            yield 'b';
+            yield 'c';
+            yield `hello ${name}!`;
+        }
+
+        let gen = hello( 'kim' );
+
+        gen.next(); // {value: "a", done: false}
+        gen.next(); // {value: "b", done: false}
+        gen.next(); // {value: "c", done: false} 
+        gen.next(); // {value: "hello Kim", done: false}
+        gen.next(); // {value: undefined, done: true}
+
+* **generator는 thread가 아니다.**
+
+##### 이터레이터로서 제너레이터
+
+* 제너레이터는 `[Symbol.iterator]` 함수와 `next()`를 내장하고 있다. 
+* 제너레이터 함수를 Iterable 객체로서 사용 가능하다. 
+    
+        function range( a, b ){
+
+            return {
+                [Symbol.iterator](){
+
+                    return {
+                        next(){
+                            if( a > b ) return { done: true };
+
+                            return { value: a++, done: false };
+                        }
+                    }
+                }
+            }
+        }
+
+        function* range( a, b ){
+
+            for( ; a <= b; a++ ) yield a;
+        }
+
+        let [ ...a ] = range( 1, 5 );
+
+        a // [ 1, 2, 3, 4, 5 ];
+
+* `[Symbol.iterator]()` 함수를 이용해서 만든 fibonaci 수열도 generator로 다시 만들 수 있다.
+
+        function fibonaci( len = 10 ){
+
+            let a = 0, b = 1, t;
+
+            return {
+
+                [Symbol.iterator](){
+
+                    return{
+
+                        next(){
+
+                            if( --len < 0 ) return { done: true };
+
+                            t = a + b;
+                            [a, b] = [b, t];
+
+                            return { done: false, value: t };
+                        }
+                    }
+                }
+            }
+        }
+
+        function* fibonaci( len = 10 ){
+
+            let a = 0, b = 1, t;
+
+            for( ; len--; ){
+
+                t = a + b;
+                [a, b] = [b, t];
+
+                yield t;
+            }
+        }
+
+        let [ ...a ] = fibonaci();
+
+        a // [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+
+* 무한 시퀀스를 만들 수 있다. 
+* lazy evaluation을 구현할 수 있다. 
+* iterable helper 함수를 만들 수 있다. 
+
+        function* map( iterable, f ){
+
+            for( let value of iterable ){
+
+                yield f( value );
+            }
+        }
+
+        function* filter( iterable, f ){
+
+            for( let value of iterable ){
+
+                if( !f( value, iterable ) ) continue;
+
+                yield value;
+            }
+        }
+
 [Promise](https://developers.google.com/web/fundamentals/getting-started/primers/promises)
 ----
 

@@ -41,21 +41,101 @@
 		let transformedPoint = new Point( ...transform( mat, ...rotate( ...p ) ) );
 
 
-		function range( a, b ){
+		// function range( a, b ){
 
-			return {
-				[Symbol.iterator](){
+		// 	return {
+		// 		[Symbol.iterator](){
 
-					return {
-						next(){
-							if( a > b ) return { done: true };
+		// 			return {
+		// 				next(){
+		// 					if( a > b ) return { done: true };
 
-							return { value: a++, done: false };
-						}
-					}
-				}
+		// 					return { value: a++, done: false };
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		function* functionName( param ){
+
+			let returnValue = 10;
+
+			yield returnValue;
+		}
+
+		function* hello( name ){
+
+			yield 'a';
+			yield 'b';
+			yield 'c';
+			yield `hello ${name}!`;
+
+			return 'test';
+		}
+
+		function* range( a, b ){
+
+			for( ; a <= b; a++ ) yield a;
+		}
+
+		// function fibonaci( len = 10 ){
+
+		// 	let a = 0, b = 1, t;
+
+		// 	return {
+
+		// 		[Symbol.iterator](){
+
+		// 			return{
+
+		// 				next(){
+
+		// 					if( --len < 0 ) return { done: true };
+
+		// 					t = a + b;
+		// 					[a, b] = [b, t];
+
+		// 					return { done: false, value: t };
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+
+		function* fibonaci( len = 10 ){
+
+			let a = 0, b = 1, t;
+
+			for( ; len--; ){
+
+				t = a + b;
+				[a, b] = [b, t];
+
+				yield t;
 			}
 		}
+
+
+		function* map( iterable, f ){
+
+			for( let value of iterable ){
+
+				yield f( value );
+			}
+		}
+
+		function* filter( iterable, f ){
+
+			for( let value of iterable ){
+
+				if( !f( value, iterable ) ) continue;
+
+				yield value;
+			}
+		}
+
 
 	</script>
 </body>
