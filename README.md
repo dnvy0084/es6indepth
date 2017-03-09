@@ -1307,7 +1307,7 @@ ES6 in Depth
             }
         }
 
-[Promise](https://developers.google.com/web/fundamentals/getting-started/primers/promises)
+[Promise](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 ----
 
 [Generator2](http://hacks.mozilla.or.kr/2016/02/es6-in-depth-generators-continued/)
