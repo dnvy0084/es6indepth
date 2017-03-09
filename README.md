@@ -1155,6 +1155,21 @@ ES6 in Depth
 
 * `map.entries()` 구문은 map 안의 모든 엔트리들을 순회할 수 있는 이터레이터를 리턴한다. `map[Symbol.iterator]()` 구문과 똑같다. 사실 이것은 동일한 메소드에 대한 다른 명칭일 뿐이다.
 
+##### WeakMap, WeakSet
+
+* weakmap과 weakset은 key나 value에 대해 약한 참조를 한다. (map과 set은 [강한 참조](https://developer.mozilla.org/ko/docs/Web/JavaScript/Memory_Management)) 그래서 weakmap, weakset에 포함되어 있더라도 다른 곳에서 참조하지 않는다면( roots에서 닿지 않는다면 ) weak collection에서도 제거된다. 
+
+* weakmap의 key와 weakset의 value는 반드시 객체여야 한다. 
+
+        new WeakSet( [ 1,2,3,4 ] ); // Error
+        new WeakMap( [ [ 'key', 3 ], [ 'key2', 4 ] ] ); // Error
+
+* WeakMap은 new, has, set, get, delete만 지원한다. 
+
+* WeakSet은 new, has, add, delete만 지원한다. 
+
+* WeakMap, WeakSet 모두 iterator 함수가 없다. Iterable 객체가 아니다. 
+
 [Generator](http://hacks.mozilla.or.kr/2015/08/es6-in-depth-generators/)
 ----
 
