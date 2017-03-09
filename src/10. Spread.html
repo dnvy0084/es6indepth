@@ -1,0 +1,62 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		function multiParam( a, b, c, d ){
+			console.log( a, b, c, d );
+		};
+
+		let array = [ 1, 2, 3, 4 ];
+
+		multiParam( ...array );
+
+		function Point( x = 0, y = 0 ){
+			this.x = x;
+			this.y = y;
+		}
+
+		Point.prototype = {
+
+			[Symbol.iterator](){
+				return [ this.x, this.y ][Symbol.iterator]();
+			}
+		}
+
+		function rotate( x, y ){
+
+			return [ x + 1, y + 1 ];
+		}
+
+		function transform( mat, x, y ){
+
+			return [ x + 1, y + 1 ];
+		}
+
+		let p = new Point( 2, 4 );
+		let mat = null;
+
+		let transformedPoint = new Point( ...transform( mat, ...rotate( ...p ) ) );
+
+
+		function range( a, b ){
+
+			return {
+				[Symbol.iterator](){
+
+					return {
+						next(){
+							if( a > b ) return { done: true };
+
+							return { value: a++, done: false };
+						}
+					}
+				}
+			}
+		}
+
+	</script>
+</body>
+</html>

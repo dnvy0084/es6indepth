@@ -887,13 +887,102 @@ ES6 in Depth
 
         let { x, y } = rotate( Math.PI / 2, point );
 
-[Spread](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/Spread_operator)
+[Spread Operator](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Operators/Spread_operator)
 -----
 
 ##### 전개 연산자
 
 * Iterable 객체 앞에 `...`을 사용하여 함수 인자나 배열 요소, 비구조화 할당 등에 사용할 수 있다. 
-* 함수의 인자를 Iterable 객체로 호출 할 수 있다. 
+* Function.apply를 대신하여 "읽기 쉽게" 쓸 수 있다. 
+
+        function multiParam( a, b, c, d ){
+            console.log( a, b, c, d );
+        };
+
+        let array = [ 1, 2, 3, 4 ];
+    
+        multiParam.apply( null, array ); // function.apply 사용. 
+        multiParam( ...array ); // 전개 연산자를 이용해 함수의 인자를 호출. 
+
+
+* 배열 리터럴 구문에 사용 가능하다. 
+
+        let a = [ 3, 4 ];
+        let b = [ 1, 2, ...a, 5, 6 ];
+
+        console.log(b) // [1,2,3,4,5,6];
+
+* 비구조화 할당에 사용 가능하다. 
+
+        let [ a, b, ...c ] = [ 1, 2, 3, 4, 5 ];
+
+        a // 1,
+        b // 2,
+        c // [ 3, 4, 5 ];
+
+* new 연산자에서도 사용할 수 있다. 
+        
+        function Point( x = 0, y = 0 ){
+            this.x = x;
+            this.y = y;
+        }
+
+        const position = [ 10, 20 ];
+        let p = new Point( ...position );
+
+        p // { x: 10, y: 20 };
+
+* Iterable 객체를 배열로 변환 가능하다. 
+
+        function range( a, b ){
+
+            return {
+                [Symbol.iterator](){
+
+                    return {
+                        next(){
+                            if( a > b ) return { done: true };
+
+                            return { value: a++, done: false };
+                        }
+                    }
+                }
+            }
+        }
+
+        let [ ...list ] = range( 1, 5 );
+
+        list // [ 1,2,3,4,5 ];
+
+* 활용
+
+        function Point( x = 0, y = 0 ){
+            this.x = x;
+            this.y = y;
+        }
+
+        Point.prototype = {
+
+            [Symbol.iterator](){
+                return [ this.x, this.y ][Symbol.iterator]();
+            }
+        }
+
+        function rotate( x, y ){
+
+            return [ x + 1, y + 1 ];
+        }
+
+        function transform( mat, x, y ){
+
+            return [ x + 1, y + 1 ];
+        }
+
+        let p = new Point( 2, 4 );
+        let mat = null;
+
+        let transformedPoint = new Point( ...transform( mat, ...rotate( ...p ) ) );
+
 
 [Collections](http://hacks.mozilla.or.kr/2015/12/es6-in-depth-collections/)
 ----
