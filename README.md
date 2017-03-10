@@ -1310,6 +1310,10 @@ ES6 in Depth
 [Promise](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 ----
 
+##### 정의 
+
+* Promise는 
+
 [Generator2](http://hacks.mozilla.or.kr/2016/02/es6-in-depth-generators-continued/)
 ----
 

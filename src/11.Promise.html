@@ -1,0 +1,71 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		class Defer{
+
+			constructor( executor ){
+
+				this.chain = [];
+				this.resolved = null;
+				this.rejected = null;
+
+				excutor( this.resolve, this.reject );
+			}
+
+			then( resolved, rejected ){
+
+			}
+
+			catch( rejected ){
+
+			}
+
+			resolve( ...rest ){
+				this.resolved = rest;
+			}
+
+			reject( ...rest ){
+				this.rejected = rest;
+			}
+		}
+
+		const url = 'img/line.png';
+
+		let p = new Promise( ( resolve, reject ) =>{
+
+			let img = document.createElement( 'img' );
+
+			img.src = url;
+
+			img.onload = () => {
+
+				console.log( 'resolve', resolve );
+				
+				resolve( img );
+			};
+
+			img.onerror = e => {
+
+				console.log( 'reject', reject );
+
+				reject( e );
+			};
+
+		}).then( img => console.log( img ) );
+
+		p = new Promise( ( resolve, reject ) =>{
+
+			console.log( 'promise excutor' );
+			resolve( 3 );
+
+		}).then( n => console.log(n) );
+
+
+
+	</script>
+</body>
+</html>
