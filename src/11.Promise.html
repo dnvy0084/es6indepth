@@ -9,7 +9,9 @@
 
 			constructor( executor ){
 
-				this.chain = [];
+				this.thenChain = [];
+				this.rejectedChain = [];
+
 				this.resolved = null;
 				this.rejected = null;
 
@@ -18,6 +20,10 @@
 
 			then( resolved, rejected ){
 
+				return new Defer( ( resolve, reject ) =>{
+
+						
+				})
 			}
 
 			catch( rejected ){
@@ -35,36 +41,182 @@
 
 		const url = 'img/line.png';
 
-		let p = new Promise( ( resolve, reject ) =>{
+		// let p = new Promise( ( resolve, reject ) =>{
 
-			let img = document.createElement( 'img' );
+		// 	let img = document.createElement( 'img' );
 
-			img.src = url;
+		// 	img.src = url;
 
-			img.onload = () => {
+		// 	img.onload = () => {
 
-				console.log( 'resolve', resolve );
+		// 		console.log( 'resolve', resolve );
 				
-				resolve( img );
-			};
+		// 		resolve( img );
+		// 	};
 
-			img.onerror = e => {
+		// 	img.onerror = e => {
 
-				console.log( 'reject', reject );
+		// 		console.log( 'reject', reject );
 
-				reject( e );
-			};
+		// 		reject( e );
+		// 	};
 
-		}).then( img => console.log( img ) );
+		// }).then( img => console.log( img ) );
 
-		p = new Promise( ( resolve, reject ) =>{
+		// p = new Promise( ( resolve, reject ) =>{
 
-			console.log( 'promise excutor' );
-			resolve( 3 );
+		// 	console.log( 'promise excutor' );
+		// 	resolve( 3 );
 
-		}).then( n => console.log(n) );
+		// }).then( n => console.log(n) );
 
+		// let p = new Promise( excutor );
 
+		// p.then( resolved, rejected );
+		// p.then( resolved, rejected );
+		// p.catch( rejected );
+
+		function load( url, onResponse ){
+
+			let xhr = new XMLHttpRequest();
+
+			xhr.onreadystatechange = function(e){
+
+				if( e.target.readyState == 4 ){
+
+					let data = JSON.parse( e.target.responseText );
+
+					console.log( data );
+
+					onResponse( data.url )
+				}
+			}
+
+			xhr.open( 'GET', 'http://localhost:8080' + url );
+			xhr.send();
+		}
+
+		load( '/api/id', ( url ) =>{
+
+			console.log( url );
+
+			load( url, ( url ) =>{
+
+				console.log( url );
+
+				load( url, ( url )=>{
+
+					console.log( url );
+
+					load( url, ( url ) =>{
+
+						console.log( url );
+					});
+				})
+			});
+		});
+	
+
+		function loadImage( url ){
+
+			return new Promise( (resolve, reject)=>{
+
+				let img = document.createElement( 'img' );
+
+				img.src = url;
+
+				img.onload = () => resolve(img);
+				img.onerror = e => reject(e);
+			});
+		}
+
+		function loadPromise( url ){
+
+			console.log( 'request', url );
+
+			return new Promise( ( resolve, reject ) =>{
+
+				let xhr = new XMLHttpRequest();
+
+				xhr.onreadystatechange = function(e){
+
+					if( e.target.readyState != 4 ) return;
+
+					let data = JSON.parse( e.target.responseText );
+
+					if( data.success ){
+
+						resolve( data.url );
+					}
+					else{
+
+						reject( data.message );
+					}
+				}
+
+				xhr.onerror = function(e){
+
+					reject( e );
+				}
+
+				xhr.open( 'GET', 'http://localhost:8080' + url );
+				xhr.send();
+			});
+		}
+
+		function getImageData( img ){
+
+			let canvas = document.createElement( 'canvas' );
+
+			canvas.width = img.width;
+			canvas.height = img.height;
+
+			let context = canvas.getContext( '2d' );
+
+			context.drawImage( img, 0, 0 );
+
+			return context.getImageData( 0, 0, canvas.width, canvas.height );
+		}
+
+		function putGreyImageData( data ){
+
+			let r, g, b, a,
+				d = data.data;
+
+			for( var i = 0; i < d.length; i += 4 ){
+				
+				r = d[i];
+				g = d[i+1];
+				b = d[i+2];
+
+				a = r * 0.2 + g * 0.7 + b * 0.1;
+
+				d[i] = d[i+1] = d[i+2] = a;
+			}
+
+			let canvas = document.createElement( 'canvas' );
+			
+			canvas.width = data.width;
+			canvas.height = data.height;
+
+			canvas.getContext('2d').putImageData( data, 0, 0 );
+
+			return canvas;
+		}
+
+		loadPromise( '/api/id' )
+			.then( loadPromise )
+			.then( loadPromise )
+			.then( loadPromise )
+			.then( loadImage )
+			.then( img => { 
+				document.body.appendChild( img );
+				return img;
+			})
+			.then( getImageData )
+			.then( putGreyImageData ) 
+			.then( dom => document.body.appendChild(dom) )
+			.catch( e => console.log( `[ERROR] ${e}` ) );
 
 	</script>
 </body>

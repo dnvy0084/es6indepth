@@ -1312,7 +1312,132 @@ ES6 in Depth
 
 ##### 정의 
 
-* Promise는 
+* Promise는 비동기 작업을 위해 사용한다. 그러나 일련의 순서가 있는 동기 작업들이나 비동기, 동기 작업이 섞여있는 상황에서도 용이하다. 
+* 지금은 아니지만 나중에 완료될 것으로 기대되는 작업을 위해 성공과 실패 두 상황에 대한 callback chain을 걸거나 단일 에러처리가 쉽도록 되어있다. 
+* 대기중(pending), 완료됨(settled){ 이행됨(fulfiled), 거부됨(rejected) 두 가지중 하나로 수행 완료} 두 가지 상태를 가진다. 
+
+##### 기본 형태
+
+* Promise의 기본적인 형태는 다음과 같다. 
+
+        let p = new Promise( executor );
+
+        p.then( resolved, rejected );
+        p.then( resolved, rejected );
+        p.catch( rejected );
+
+        function executor( resolve, reject ){
+            // code..
+        }
+
+* Image를 load하는 기본적인 promise의 형태이다.
+        
+        const url = 'path/to/img';
+
+        let p = new Promise( ( resolve, reject ) =>{
+
+            let img = document.createElement( 'img' );
+
+            img.src = url;
+
+            img.onload = () => resolve( img );
+            img.onerror = e => reject( e );
+
+        }).then( img => document.body.appendChild( img ) );
+
+* executor 내부에서 비동기 처리가 성공적으로 수행되었을 때 resolve를, 실패했을 때 reject를 호출하여 해당 promise 객체에 `.then()`으로 추가된 다음 callback으로 원하는 인자와 함께 넘겨줄 수 있다. 
+* `.then()`과 `.catch()`는 모두 promise 객체를 반환하기 때문에 method chain을 통해 일련의 작업을 처리한다. 
+* `.then()`의 rejected callback은 생략할 수 있다. 없을 경우 `.catch()`로 추가된 rejected callback을 찾아 호출한다. 
+
+##### 활용
+
+* src 폴더안에서 node server.js로 테스트 용 server를 실행한다. 
+* 테스트용 서버는 "localhost:8080/api/id" 라는 api를 호출 할 경우 다음에 호출해야 할 url를 json으로 내려준다. 4단계의 api 호출을 통해 최종적으로 image url을 가져올 수 있다. 
+* promise없이 코딩하면 다음과 같다. 
+
+        function load( url, onResponse ){
+
+            let xhr = new XMLHttpRequest();
+
+            xhr.onreadystatechange = function(e){
+
+                if( e.target.readyState == 4 ){
+
+                    let data = JSON.parse( e.target.responseText );
+
+                    console.log( data );
+
+                    onResponse( data.url )
+                }
+            }
+
+            xhr.open( 'GET', 'http://localhost:8080' + url );
+            xhr.send();
+        }
+
+        load( '/api/id', ( url ) =>{
+
+            console.log( url );
+
+            load( url, ( url ) =>{
+
+                console.log( url );
+
+                load( url, ( url )=>{
+
+                    console.log( url );
+
+                    load( url, ( url ) =>{
+
+                        console.log( url );
+                    });
+                })
+            });
+        });
+
+* Promise를 활용하면 다음과 같이 간략하고 읽기 쉽게 쓸 수 있다. 또한 함수를 조합(composite)하여 원하는 flow를 만들기 쉬워진다. 
+
+        function loadPromise( url ){
+
+            console.log( 'request', url );
+
+            return new Promise( ( resolve, reject ) =>{
+
+                let xhr = new XMLHttpRequest();
+
+                xhr.onreadystatechange = function(e){
+
+                    if( e.target.readyState != 4 ) return;
+
+                    let data = JSON.parse( e.target.responseText );
+
+                    if( data.success ){
+
+                        resolve( data );
+                    }
+                    else{
+
+                        reject( data.message );
+                    }
+                }
+
+                xhr.onerror = function(e){
+
+                    reject( e );
+                }
+
+                xhr.open( 'GET', 'http://localhost:8080' + url );
+                xhr.send();
+            });
+        }
+
+        
+        loadPromise( '/api/id' )
+            .then( data => loadPromise( data.url ) )
+            .then( data => loadPromise( data.url ) )
+            .then( data => loadPromise( data.url ) )
+            .then( data => loadImage( data.url ) )
+            .catch( e => console.log( `[ERROR] ${e}` ) );
 
 [Generator2](http://hacks.mozilla.or.kr/2016/02/es6-in-depth-generators-continued/)
 ----
