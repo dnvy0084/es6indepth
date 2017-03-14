@@ -93,10 +93,6 @@
 		// promise.then( img => iter.next( img ) )
 		// 	.catch( e => iter.throw(e) );
 		 
-		function getNumber(){
-
-			return 3;
-		}
 
 		function co( async ){
 
@@ -104,13 +100,18 @@
 
 				function next( iterResult ){
 
+					console.log( iterResult );
+
 					if( iterResult.done ) return resolve( iterResult.value );
 
 					const promise = iterResult.value;
 
 					if( promise instanceof Promise ){
 
-						promise.then( result => next( iter.next( result ) ) );
+						promise.then( 
+							result => next( iter.next( result ) ),
+							e => next( iter.throw( e ) )
+						);
 					}
 					else{
 
@@ -129,19 +130,23 @@
 
 			let url = yield request( '/api/id' );
 
-			url = yield request( url );
-			url = yield request( url );
-			url = yield request( url );
+			try{
 
-			let n = getNumber();
+				url = yield request( url );
+				url = yield request( url );
+				url = yield request( url );	
+			}
+			catch( e ){
 
-			let img = yield loadImage( url );
+				console.log( e );
+				return 'error';
+			}
 
-			document.body.appendChild( img );
+			img = yield loadImage( url );
 
-			return n;
+			return img;
 
-		}).then( img => console.log( 'return value', img ) );
+		}).then( img => document.body.appendChild( img ) );
 
 		function* range( a, b ){
 
