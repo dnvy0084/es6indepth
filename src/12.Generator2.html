@@ -1,0 +1,151 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		function* abc(){
+
+			console.log( 'generator started' );
+
+			let index = 0;
+
+			let a = yield index++,
+				b = yield index++,
+				c = yield index++;
+
+			console.log( 'generator completed', a, b, c );
+		}
+
+		// let iter = abc();
+
+		// iter.next(); // 첫 yield 반환값 까지 호출.
+		// iter.next( 'value-a'); // 'value-a'를 변수 a에 담고 다음 yield 반환값 까지 호출. 
+		// iter.next( 'value-b'); // 'value-a'를 변수 a에 담고 다음 yield 반환값 까지 호출. 
+		// iter.next( 'value-c'); // 'value-a'를 변수 a에 담고 함수 마지막까지 호출. 
+
+
+		function loadImage( url ){
+
+			return new Promise( (resolve, reject)=>{
+
+				let img = document.createElement( 'img' );
+
+				img.src = url;
+				img.onload = () => resolve( img );
+				img.onerror = e => reject(e);
+			});
+		}
+
+		function request( url ){
+
+			console.log( url );
+
+			return new Promise( (resolve, reject) =>{
+
+				const req = new XMLHttpRequest();
+
+				req.onreadystatechange = function(){
+
+					console.log( 'onreadystatechange', req.readyState );
+
+					if( req.readyState != 4 ) return;
+
+					const data = JSON.parse( req.responseText );
+
+					console.log( req.responseText, data );
+
+					if( data.success ) resolve( data.url );
+					else reject( data.message ); 
+				}
+
+				req.onerror = function(e){
+
+					reject( e );
+				}
+
+				req.open( 'GET', 'http://localhost:8080' + url );
+				req.send();
+			});
+		}
+
+		// function* asyncLoad( url ){
+
+		// 	let img;
+
+		// 	try{
+
+		// 		img = yield loadImage( url );
+
+		// 		document.body.appendChild( img );
+		// 	}
+		// 	catch( e ){
+
+		// 		console.log(e);
+		// 	}
+		// }
+
+		// const iter = asyncLoad( 'img/line2.png' );
+
+		// let promise = iter.next().value;
+
+		// promise.then( img => iter.next( img ) )
+		// 	.catch( e => iter.throw(e) );
+		 
+
+		function co( async ){
+
+			function next( iterResult ){
+
+				if( iterResult.done ) return;
+
+				const promise = iterResult.value;
+
+				if( promise instanceof Promise ){
+
+					promise.then( result => next( iter.next( result ) ) );
+				}
+				else{
+
+					next( iter.next() );
+				}
+			}
+
+			const iter = async();
+
+			next( iter.next() );
+		}
+
+		co( function* (){
+
+			let url = yield request( '/api/id' );
+
+			url = yield request( url );
+			url = yield request( url );
+			url = yield request( url );
+
+			let img = yield loadImage( url );
+
+			document.body.appendChild( img );
+		})
+
+		function* range( a, b ){
+
+			for( ; a <= b; a++ ) yield a;
+		}
+
+		function* yieldAll( iterA, iterB ){
+
+			yield* iterA;
+			yield* iterB;
+		}
+
+		for( let n of yieldAll( range(1,10), range(11,20) ) ){
+			console.log( n );
+		}
+
+
+	</script>
+</body>
+</html>

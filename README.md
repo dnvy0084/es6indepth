@@ -1442,6 +1442,149 @@ ES6 in Depth
 [Generator2](http://hacks.mozilla.or.kr/2016/02/es6-in-depth-generators-continued/)
 ----
 
+##### `.next( param )`
+
+* Generator 함수를 호출하여 생성한 iterator 객체는 next를 통해 Generator 함수 본문으로 값을 전달 할 수 있다. 
+
+        function* abc(){
+
+            console.log( 'generator started' );
+
+            let index = 0;
+
+            let a = yield index++,
+                b = yield index++,
+                c = yield index++;
+
+            console.log( 'generator completed', a, b, c );
+        }
+
+        let iter = abc();
+
+        iter.next(); // 첫 yield 반환값 까지 호출.
+        iter.next( 'value-a'); // 'value-a'를 변수 a에 담고 다음 yield 반환값 까지 호출. 
+        iter.next( 'value-b'); // 'value-a'를 변수 a에 담고 다음 yield 반환값 까지 호출. 
+        iter.next( 'value-c'); // 'value-a'를 변수 a에 담고 함수 마지막까지 호출.  
+
+* 비동기 로직에서 `.next( param )`을 이용하면 동기 로직과 같이 작성할 수 있다. 
+
+        let img = yield loadImage( url );
+
+* 기존 callback function을 이용하면 다음과 같이 작성할 수 있다. 다만 `iter.next( img )`가 loadImageCallback 함수의 complete와 함께 호출되어야 하기 때문에 유연한 구조라 할 수 없다. 
+
+        const iter = asyncFunction();
+        iter.next();
+
+        function* asyncFunction(){
+
+            let img = yield loadImageCallback( 'img/line.png' );
+
+            document.body.appendChild( img );
+        }
+
+        function loadImageCallback( url ){
+
+            let img = new Image();
+
+            img.src = url;
+            img.onload = () => iter.next(img);
+        }
+
+        iter = asyncFunction();
+
+* Promise를 반환하는 비동기 함수를 호출하면 좀 더 유연한 구조로 바꿀 수 있다. 
+    
+        function loadImage( url ){
+
+            return new Promise( (resolve, reject)=>{
+
+                let img = document.createElement( 'img' );
+
+                img.src = url;
+                img.onload = () => resolve( img );
+                img.onerror = e => reject(e);
+            });
+        }
+
+        function* asyncFunction(){
+
+            let img = yield loadImage( 'img/line.png' );
+
+            document.body.appendChild( img );
+        }
+
+        const iter = asyncFunction();
+
+        let promise = iter.next().value;
+
+        promise.then( img => iter.next( img ) );
+
+* `Promise.catch()`에서 잡은 에러를 `iter.throw();`를 통해 generator 본문으로 error throw가 가능하다. 
+
+        promise.then( img => iter.next( img ) )
+               .catch( e => iter.throw( e ) );
+
+* yield 반환값이 promise일 경우 `.then( result => iter.next( result ) )` 등으로 재귀함수 처럼 호출 가능하다. 
+
+        function co( async ){
+
+            function next( iterResult ){
+
+                if( iterResult.done ) return;
+
+                const promise = iterResult.value;
+
+                if( promise instanceof Promise ){
+
+                    promise.then( result => next( iter.next( result ) ) );
+                }
+                else{
+
+                    next( iter.next() );
+                }
+            }
+
+            const iter = async();
+
+            next( iter.next() );
+        }
+
+        co( function* (){
+
+            let url = yield request( '/api/id' );
+
+            url = yield request( url );
+            url = yield request( url );
+            url = yield request( url );
+
+            let img = yield loadImage( url );
+
+            document.body.appendChild( img );
+        })
+
+* generator와 promise를 사용해 비동기 코드를 동기처럼 작성 가능하도록 도와주는 library에 [co](https://github.com/tj/co)가 있다.
+
+##### yield*
+
+* yield는 하나의 값을 반환하지만 yield*은 iterator를 전부 구동시켜 모든 값들을 yield합니다. 
+    
+        function* range( a, b ){
+
+            for( ; a <= b; a++ ) yield a;
+        }
+
+        function* yieldAll( iterA, iterB ){
+
+            yield* iterA;
+            yield* iterB;
+        }
+
+        for( let n of yieldAll( range(1,10), range(11,20) ) ){
+            console.log( n );
+        }
+
+* 이를 이용해 iterator를 합치는 함수나 커다란 for loop를 refactoring 할 수 있다. 
+
 [Proxy](http://hacks.mozilla.or.kr/2016/03/es6-in-depth-proxies-and-reflect/)
 ----
 
