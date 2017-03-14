@@ -1588,6 +1588,33 @@ ES6 in Depth
 [Proxy](http://hacks.mozilla.or.kr/2016/03/es6-in-depth-proxies-and-reflect/)
 ----
 
+##### Proxy
+
+* Proxy는 대리인이다.
+* Proxy를 이용하면 javascript 내부 함수를 오버라이드 할 수 있다.
+* getPrototypeOf, setPrototypeOf, get, set, call, construct등 javascript object에는 덮어씌울 수도, 지울수도 없는 빌트인(builtin 혹은 internal) 함수가 14개 있다. [여기]
+(http://www.ecma-international.org/ecma-262/6.0/index.html#sec-object-internal-methods-and-internal-slots)에서 table 5, table 6을 참고
+* Proxy는 다음과 같이 선언한다. 
+
+        const proxy = new Proxy( target, handler );
+
+* proxy 객체는 target의 대리인으로 작동한다. 
+        
+        let target = {}, 
+            handler = {};
+
+        const proxy = new Proxy( target, handler );
+
+        proxy.color = 'red';
+
+        console.log( target.color ); // red
+
+* handler 객체를 통해 내부 함수를 오버라이드 한다. 
+
+        handler = {
+            get: function( target, )
+        }
+
 [Module](http://hacks.mozilla.or.kr/2016/05/es6-in-depth-modules/)
 ----
 

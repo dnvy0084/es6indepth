@@ -93,28 +93,36 @@
 		// promise.then( img => iter.next( img ) )
 		// 	.catch( e => iter.throw(e) );
 		 
+		function getNumber(){
+
+			return 3;
+		}
 
 		function co( async ){
 
-			function next( iterResult ){
+			return new Promise( (resolve, reject)=>{
 
-				if( iterResult.done ) return;
+				function next( iterResult ){
 
-				const promise = iterResult.value;
+					if( iterResult.done ) return resolve( iterResult.value );
 
-				if( promise instanceof Promise ){
+					const promise = iterResult.value;
 
-					promise.then( result => next( iter.next( result ) ) );
+					if( promise instanceof Promise ){
+
+						promise.then( result => next( iter.next( result ) ) );
+					}
+					else{
+
+						next( iter.next() );
+					}
 				}
-				else{
 
-					next( iter.next() );
-				}
-			}
+				const iter = async();
 
-			const iter = async();
+				next( iter.next() );
 
-			next( iter.next() );
+			});
 		}
 
 		co( function* (){
@@ -125,10 +133,15 @@
 			url = yield request( url );
 			url = yield request( url );
 
+			let n = getNumber();
+
 			let img = yield loadImage( url );
 
 			document.body.appendChild( img );
-		})
+
+			return n;
+
+		}).then( img => console.log( 'return value', img ) );
 
 		function* range( a, b ){
 
