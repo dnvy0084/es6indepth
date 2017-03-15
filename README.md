@@ -1621,6 +1621,140 @@ ES6 in Depth
 [Class](http://hacks.mozilla.or.kr/2016/03/es6-in-depth-classes/)
 ----
 
+##### Class
+
+* ES6부터 class 키워드가 추가되어 클래스가 사용가능하게 되었다. 
+* ES5에서는 prototype 객체를 이용해 class와 상속을 구현하였다.
+        
+        function Point( x, y ){
+            this.x = x || 0;
+            this.y = y || 0;
+        }
+
+        Point.prototype = {
+
+            scale: function( value ){
+
+                this.x *= value;
+                this.y *= value;
+            },
+
+            rotate: function( t ){
+
+                var cos = Math.cos(t),
+                    sin = Math.sin(t),
+                    x = this.x,
+                    y = this.y;
+
+                this.x = cos * x - sin * y;
+                this.y = sin * x + cos * y;
+            },
+
+            add: function( p ){
+
+                this.x += p.x;
+                this.y += p.y;
+
+                return this;
+            }
+        }
+
+        Object.defineProperties( Point.prototype, {
+
+            length: {
+                get: function(){
+                    return Math.sqrt( this.x * this.x + this.y * this.y );
+                }
+            }
+        });
+
+* ES6 class 선언은 다음과 같다. 
+
+        // 클래스 선언
+        class Point{
+
+
+            // 극 좌표를 직교 좌표로 변환.
+            static polar( len, t ){
+
+                return new Point( 
+
+                    len * Math.cos(t), 
+                    len * Math.sin(t) 
+                );
+            }
+
+            // 생성자
+            constructor( x = 0, y = 0 ){
+
+                this.x = x;
+                this.y = y;
+            }
+
+            // iterator 함수 선언. 
+            [Symbol.iterator](){
+
+                return [ this.x, this.y ][ Symbol.iterator ]();
+            }
+
+            // generator 함수 선언. 
+            *entries(){
+
+                yield [ 'x', this.x ];
+                yield [ 'y', this.y ];
+            }
+
+
+            scale( value ){
+
+                this.x *= value;
+                this.y *= value;
+            }
+
+            normalize(){
+
+                let len = this.length;
+
+                this.x /= len;
+                this.y /= len;
+            }
+
+            rotate( value ){
+
+                const   cos = Math.cos( value ),
+                        sin = Math.sin( value );
+
+                [ this.x, this.y ] =[
+
+                    cos * this.x - sin * this.y,
+                    sin * this.x + cos * this.y
+                ];
+            }
+
+            add( p ){
+
+                this.x += p.x;
+                this.y += p.y;
+            }
+
+            // getter 선언. 
+            get length(){
+                return Math.sqrt( this.x * this.x + this.y * this.y );
+            }
+
+            // setter 선언. 
+            set length( value ){
+
+                this.normalize();
+                this.scale( value );
+            }
+        }
+
+* 생성자는 생략 가능하다. 없을 경우 `constructor(){}` 구문이 디폴트 생성자로 사용된다. 
+* constructor를 generator로 만들 수는 없다. 
+* 함수 뒤 세미콜론은 생략할 수 있다.
+* 클래스 내부 어디에서건 this 객체에 속성을 추가하여 인스턴스 변수를 만들 수 있다. 
+
 [SubClassing](http://hacks.mozilla.or.kr/2016/04/es6-in-depth-subclassing/)
 ----
 
