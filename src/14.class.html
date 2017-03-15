@@ -29,10 +29,12 @@
 		// 		this.y = sin * x + cos * y;
 		// 	},
 
-		// 	add: function( p ){
+		// 	normalize: function(){
 
-		// 		this.x += p.x;
-		// 		this.y += p.y;
+		// 		var len = this.length;
+
+		// 		this.x /= len;
+		// 		this.y /= len;
 
 		// 		return this;
 		// 	}
@@ -41,11 +43,48 @@
 		// Object.defineProperties( Point.prototype, {
 
 		// 	length: {
+
 		// 		get: function(){
 		// 			return Math.sqrt( this.x * this.x + this.y * this.y );
+		// 		},
+
+		// 		set: function( value ){
+
+		// 			this.normalize()
+		// 				.scale( value );
 		// 		}
 		// 	}
 		// });
+
+		// function Vector( x, y ){
+
+		// 	Point.apply( this, [ x, y ] );
+		// }
+
+		// const p = Vector.prototype = Object.create( Point.prototype );
+
+		// p.add = function(b){
+
+		// 	this.x += b.x;
+		// 	this.y += b.y;
+
+		// 	return this;
+		// }
+
+		// p.sub = function(b){
+
+		// 	this.x -= b.x;
+		// 	this.y -= b.y;
+
+		// 	return this;
+		// }
+
+		// p.rotate = function(t){
+
+		// 	Point.prototype.rotate.call( this, t );
+
+		// 	console.log( this.x, this.y );
+		// }
 
 		// 클래스 선언
 		class Point{
@@ -108,12 +147,6 @@
 				];
 			}
 
-			add( p ){
-
-				this.x += p.x;
-				this.y += p.y;
-			}
-
 			// getter 선언. 
 			get length(){
 				return Math.sqrt( this.x * this.x + this.y * this.y );
@@ -124,6 +157,43 @@
 
 				this.normalize();
 				this.scale( value );
+			}
+		}
+
+		function superCall(){
+
+			return Point;
+		}
+
+
+		class Vector extends superCall(){
+
+			constructor( x = 0, y = 0 ){
+				// 상속할 경우 this binding을 위해 반드시 호출하여야 한다. 
+				super( x, y );
+			}
+
+			add( b ){
+
+				this.x += b.x;
+				this.y += b.y;
+
+				return this;
+			}
+
+			sub( b ){
+
+				this.x -= b.x;
+				this.y -= b.y;
+
+				return this;
+			}
+
+			rotate( t ){
+
+				super.rotate(t);
+
+				console.log( ...this );
 			}
 		}
 

@@ -1650,10 +1650,12 @@ ES6 in Depth
                 this.y = sin * x + cos * y;
             },
 
-            add: function( p ){
+            normalize: function(){
 
-                this.x += p.x;
-                this.y += p.y;
+                var len = this.length;
+
+                this.x /= len;
+                this.y /= len;
 
                 return this;
             }
@@ -1662,8 +1664,15 @@ ES6 in Depth
         Object.defineProperties( Point.prototype, {
 
             length: {
+
                 get: function(){
                     return Math.sqrt( this.x * this.x + this.y * this.y );
+                },
+
+                set: function( value ){
+                    
+                    this.normalize()
+                        .scale( value );
                 }
             }
         });
@@ -1731,12 +1740,6 @@ ES6 in Depth
                 ];
             }
 
-            add( p ){
-
-                this.x += p.x;
-                this.y += p.y;
-            }
-
             // getter 선언. 
             get length(){
                 return Math.sqrt( this.x * this.x + this.y * this.y );
@@ -1757,6 +1760,75 @@ ES6 in Depth
 
 [SubClassing](http://hacks.mozilla.or.kr/2016/04/es6-in-depth-subclassing/)
 ----
+
+##### inheritance
+
+* ES5에서 상속은 prototype chain을 이용한다. 
+
+        function Vector( x, y ){
+
+            Point.apply( this, [ x, y ] );
+        }
+
+        const p = Vector.prototype = Object.create( Point.prototype );
+
+        p.add = function(b){
+
+            this.x += b.x;
+            this.y += b.y;
+
+            return this;
+        }
+
+        p.sub = function(b){
+
+            this.x -= b.x;
+            this.y -= b.y;
+
+            return this;
+        }
+
+        p.rotate = function(t){
+
+            Point.prototype.rotate.call( this, t );
+
+            console.log( this.x, this.y );
+        }
+
+* ES6에서는 `extends` 키워드를 제공한다. 
+
+        class Vector extends Point{
+
+            constructor( x = 0, y = 0 ){
+                // 상속할 경우 this binding을 위해 반드시 호출하여야 한다. 
+                super( x, y );
+            }
+
+            add( b ){
+
+                this.x += b.x;
+                this.y += b.y;
+
+                return this;
+            }
+
+            sub( b ){
+
+                this.x -= b.x;
+                this.y -= b.y;
+
+                return this;
+            }
+
+            rotate( t ){
+
+                super.rotate(t);
+
+                console.log( ...this );
+            }
+        }
+
+* extends 뒤에는 prototype 속성을 갖는 올바른 생성자라면 모든 표현식이 올 수 있다. 
 
 [Module](http://hacks.mozilla.or.kr/2016/05/es6-in-depth-modules/)
 ----
