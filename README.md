@@ -1612,16 +1612,19 @@ ES6 in Depth
 * handler 객체를 통해 내부 함수를 오버라이드 한다. 
 
         handler = {
-            get: function( target, )
+            get: function( target, key, receiver ){
+            }
         }
 
-[Module](http://hacks.mozilla.or.kr/2016/05/es6-in-depth-modules/)
-----
+* Proxy는 상용으로 사용하기에는 이르다. Proxy polyfill 또한 존재하지 않는다. 
 
 [Class](http://hacks.mozilla.or.kr/2016/03/es6-in-depth-classes/)
 ----
 
 [SubClassing](http://hacks.mozilla.or.kr/2016/04/es6-in-depth-subclassing/)
+----
+
+[Module](http://hacks.mozilla.or.kr/2016/05/es6-in-depth-modules/)
 ----
 
 Project Setting

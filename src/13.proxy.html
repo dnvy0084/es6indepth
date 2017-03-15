@@ -5,11 +5,13 @@
 <body>
 	<script type="text/javascript">
 
-		let target = {}, 
+		let base = { base: true },
+			target = Object.create( base ), 
 			handler = {
 				get: function( target, key, receiver ){
 
 					console.log( `getting property(${key})` );
+					console.log( 'receiver', receiver );
 
 					return Reflect.get( target, key, receiver );
 				},
@@ -24,10 +26,11 @@
 		const proxy = new Proxy( target, handler );
 
 		proxy.color = 'red';
+		proxy.base;
 
 		console.log( target.color ); // red
+		console.log( target.base );
 
-		proxy.color;
 
 	</script>
 </body>
