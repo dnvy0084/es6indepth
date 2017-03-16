@@ -1613,8 +1613,11 @@ ES6 in Depth
 
         handler = {
             get: function( target, key, receiver ){
+                conosle.log( `getting key: ${key}` );
+
+                Reflect.get( target, key, receiver );
             }
-        }
+        };
 
 * Proxy는 상용으로 사용하기에는 이르다. Proxy polyfill 또한 존재하지 않는다. 
 
@@ -1804,6 +1807,20 @@ ES6 in Depth
                 super( x, y );
             }
 
+            // iterator 함수는 super 객체의 iterator 함수를 바로 return할 수 있다. 
+            [Symbol.iterator](){
+
+                return super[Symbol.iterator]();
+            }
+
+            // generator 함수는 바로 return할 경우 { done: true, value: super의 iterator 객체 } 
+            // 형태로 반환되어 제대로 동작하지 않는다. 
+            // super의 generator 함수 호출 반환값인 iterator를 모두 반환하면 된다. yield* 
+            *entries(){
+
+                yield* super.entries();
+            }
+
             add( b ){
 
                 this.x += b.x;
@@ -1830,10 +1847,34 @@ ES6 in Depth
 
 * extends 뒤에는 prototype 속성을 갖는 올바른 생성자라면 모든 표현식이 올 수 있다. 
 
-[Module](http://hacks.mozilla.or.kr/2016/05/es6-in-depth-modules/)
-----
+##### Builtin 객체 상속
+
+* javascript에 내장된 빌트인 객체를 상속하여 확장 가능하다. 
+* push, pop, shift, unshift 같은 메소드에서 배열의 원소에 변화가 있을 때 마다 event로 알려주는 배열도 만들 수 있다. 
+
+        class DataProvider extends Array{
+
+            constructor( ...rest ){
+
+                super( ...rest );
+            }
+
+            push( ...rest ){
+
+                super.push( ...rest );
+
+                if( this.onPush ){
+                    this.onPush( rest );
+                }
+            }
+        }
+
+* 바벨같은 트랜스파일러를 사용할 경우 빌트인 객체를 상속하여 서브 클래스를 만들 수 없다. 
 
 Project Setting
+----
+
+[Module](http://hacks.mozilla.or.kr/2016/05/es6-in-depth-modules/)
 ----
 
 [ES7](http://hacks.mozilla.or.kr/2016/07/es6-in-depth-the-future/)

@@ -173,6 +173,20 @@
 				super( x, y );
 			}
 
+			// iterator 함수는 super 객체의 iterator 함수를 바로 return할 수 있다. 
+			[Symbol.iterator](){
+
+				return super[Symbol.iterator]();
+			}
+
+			// generator 함수는 바로 return할 경우 { done: true, value: super의 iterator 객체 } 
+			// 형태로 반환되어 제대로 동작하지 않는다. 
+			// super의 generator 함수 호출 반환값인 iterator를 모두 반환하면 된다. yield* 
+			*entries(){
+
+				yield* super.entries();
+			}
+
 			add( b ){
 
 				this.x += b.x;
@@ -196,6 +210,37 @@
 				console.log( ...this );
 			}
 		}
+
+	 	class DataProvider extends Array{
+
+	 		constructor( ...rest ){
+
+	 			super( ...rest );
+	 		}
+
+	 		push( ...rest ){
+
+	 			super.push( ...rest );
+
+	 			if( this.onPush ){
+	 				this.onPush( rest );
+	 			}
+	 		}
+	 	}
+
+	 	class KeySet extends Set{
+
+	 		constructor(){
+
+	 			super();
+	 			this._init();
+	 		}
+
+	 		_init(){
+	 			
+	 		}
+	 	}
+
 
 	</script>
 </body>
