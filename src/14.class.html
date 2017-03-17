@@ -174,9 +174,11 @@
 			}
 
 			// iterator 함수는 super 객체의 iterator 함수를 바로 return할 수 있다. 
-			[Symbol.iterator](){
+			*[Symbol.iterator](){
 
-				return super[Symbol.iterator]();
+				//return super[Symbol.iterator]();
+				
+				yield* [ this.x, this.y ];
 			}
 
 			// generator 함수는 바로 return할 경우 { done: true, value: super의 iterator 객체 } 
