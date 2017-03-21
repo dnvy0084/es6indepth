@@ -64,16 +64,18 @@ const nodemodules = [
 	// npm 초기화
 	'Initialize NPM & Install Node Modules', 'npm init',
 	
-	'Install Babel-Core', 'npm install babel-core --save',
-	'Install Babel-Cli', 'npm install babel-cli --save',
-	'Install Babel-Preset-Latest', 'npm install babel-preset-latest --save',
-	'Install Babel-Plugin-Transform-Runtime', 'npm install babel-plugin-transform-runtime --save-dev',
-	'Install Babel-Runtime', 'npm install babel-runtime --save',
-	'Install Babel-polyfill', 'npm install babel-polyfill --save',
+	// 'Install Babel-Core', 'npm install babel-core --save',
+	// 'Install Babel-Cli', 'npm install babel-cli --save',
+	// 'Install Babel-loader', 'npm install babel-loader --save',
+	// 'Install Babel-Preset-Latest', 'npm install babel-preset-latest --save',
+	// 'Install Babel-Plugin-Transform-Runtime', 'npm install babel-plugin-transform-runtime --save-dev',
+	// 'Install Babel-Runtime', 'npm install babel-runtime --save',
+	// 'Install Babel-polyfill', 'npm install babel-polyfill --save',
 	
-	'Install Webpack', 'npm install webpack --save',
+	// 'Install Webpack', 'npm install webpack --save',
+	// 'Install Webpack-Dev-Server', 'npm install webpack-dev-server --save-dev'
 
-	'Install Gulp', 'npm install gulp --save',
+	// 'Install Gulp', 'npm install gulp --save',
 ];
 
 /**
@@ -98,12 +100,17 @@ function installNodeModules( nodemodules ){
 }
 
 /**
- * gulp.js, webpackconfig, babelrc등 프로젝트 설정에 필요한 파일들을 생성한다. 
+ * gulp.js, webpack.config.js, babelrc등 프로젝트 설정에 필요한 파일들을 생성한다. 
  * @return {[type]} [description]
  */
 function writeFiles( error ){
 
 	console.log( '...writing files' );
+
+	for( var k in templates ){
+
+		console.log( k, templates[k] );
+	}
 }
 
 /**
@@ -122,6 +129,63 @@ installNodeModules( nodemodules )
 
 
 
+const templates = {};
+
+templates[ '.babelrc' ] = `
+{
+	'presets': [ 'latest' ],
+	'plugins': [ 
+		[ 'transform-runtime', {
+			'helpers': true,
+			'polyfill': true,
+			'regenerator': true,
+			'moduleName': 'babel-runtime'
+		}]
+	]
+}`;
+
+templates[ 'webpack.config.js' ] = `
+const path = require( 'path' );
+
+module.exports = {
+
+	// The point or points to enter the application. 
+	// At this point the application starts executing. 
+	// If an array is passed all items will be executed.
+	// https://webpack.js.org/configuration/entry-context/#entry
+	entry: {
+		index: './transpiled/Main.js',
+	},
+
+	// The top-level output key contains set of options instructing 
+	// webpack on how and where it should output your bundles, 
+	// assets and anything else you bundle or load with webpack.
+	// https://webpack.js.org/configuration/output/
+	output: {
+		filename: '[name].bundle.js',
+		path: path.resolve( __dirname, 'dist' )
+	},
+
+	// These options determine how the different types of modules 
+	// within a project will be treated.
+	// https://webpack.js.org/configuration/module/
+	module: {
+
+	},
+
+	// These options change how modules are resolved. 
+	// webpack provides reasonable defaults, 
+	// but it is possible to change the resolving in detail. 
+	// Have a look at Module Resolution for more explanation of how the resolver works.
+	// https://webpack.js.org/configuration/resolve/
+	resolve: {
+		modules: [
+			'node_modules',
+		]
+	}
+} 
+
+`
 
 
 //------------------------------------------------------------
