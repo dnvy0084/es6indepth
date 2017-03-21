@@ -8,7 +8,7 @@ const spawnOption = {
 	stdio: [ 0, 'pipe', 'pipe' ]
 };
 
-const frame = '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@';
+const frame = '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@';
 
 
 /**
@@ -23,7 +23,7 @@ function terminal( command, opt ){
 	const a = command.split( ' ' ),
 		cmd = a[0],
 		args = a.slice(1);
-	
+
 	const child = spawn( cmd, args, opt || spawnOption );
 
 	return new Promise( (resolve, reject) =>{
@@ -55,12 +55,70 @@ function exec( log, command ){
 	return terminal( command );
 }
 
+/**
+ * 프로젝트 설정에 필요한 터미널 명령어 배열. 
+ * 1. 로그 메세지, 터미널 명령어의 두 개가 한 쌍으로 이루어진다. 
+ * @type {Array}
+ */
+const nodemodules = [
+	// npm 초기화
+	'Initialize NPM & Install Node Modules', 'npm init',
+	
+	'Install Babel-Core', 'npm install babel-core --save',
+	'Install Babel-Cli', 'npm install babel-cli --save',
+	'Install Babel-Preset-Latest', 'npm install babel-preset-latest --save',
+	'Install Babel-Plugin-Transform-Runtime', 'npm install babel-plugin-transform-runtime --save-dev',
+	'Install Babel-Runtime', 'npm install babel-runtime --save',
+	'Install Babel-polyfill', 'npm install babel-polyfill --save',
+	
+	'Install Webpack', 'npm install webpack --save',
 
-terminal( 'npm init' )
-	.then( code => exec( 'Install Webpack', 'npm install webpack --save' ) )
-	.then( code => exec( 'Install Gulp', 'npm install gulp --save' ) )
-	.then( code => console.log( 'COMPLETE', code ) )
-	.catch( code => console.log( 'ERROR', code ) );
+	'Install Gulp', 'npm install gulp --save',
+];
+
+/**
+ * npm 초기화 & es6 프로젝트에 필요한 패키지 설치. 
+ * 1. nodemodules 배열안의 모든 명령어가 모두 실행될 때까지 자신을 호출한다. 
+ * @return {[type]} [description]
+ */
+function installNodeModules( nodemodules ){
+
+	return new Promise( (resolve, reject) =>{
+
+		(function recursive(){
+		
+			if( nodemodules.length == 0 ) 
+				return resolve( null );
+
+			exec( nodemodules.shift(), nodemodules.shift() )
+				.then( recursive )
+				.catch( e => reject(e) );
+		})();
+	});
+}
+
+/**
+ * gulp.js, webpackconfig, babelrc등 프로젝트 설정에 필요한 파일들을 생성한다. 
+ * @return {[type]} [description]
+ */
+function writeFiles( error ){
+
+	console.log( '...writing files' );
+}
+
+/**
+ * 실행. 
+ */
+installNodeModules( nodemodules )
+	.then( writeFiles )
+	.catch( e => console.warn(e) );
+
+
+// exec( 'Initialize NPM', 'npm init' )
+// 	.then( code => exec( 'Install Webpack', 'npm install webpack --save' ) )
+// 	.then( code => exec( 'Install Gulp', 'npm install gulp --save' ) )
+// 	.then( code => console.log( 'COMPLETE', code ) )
+// 	.catch( code => console.log( 'ERROR', code ) );
 
 
 
