@@ -18,6 +18,25 @@ const child_process = require( 'child_process' )
 //
 //------------------------------------------------------------
 
+/**
+ * window일 경우 spawn 명령어 호출이 달라 분기 처리
+ * @param  {[type]} os ){	if(       os [description]
+ * @return {[type]}    [description]
+ */
+const makeSpawn = (function( os ){
+
+	if( os == 'win32' ){
+
+		return function( cmd, args, opt ){
+			return spawn( 'cmd.exe', [ '/c', cmd ].concat( args ), opt );
+		}
+	}
+
+	return function( cmd, args, opt ){
+		return spawn( cmd, args, opt );
+	}
+
+})( process.platform );
 
 /**
  * terminal 명령어를 실행한다. 
@@ -32,7 +51,7 @@ function terminal( command, opt ){
 		cmd = a[0],
 		args = a.slice(1);
 
-	const child = spawn( cmd, args, opt || spawnOption );
+	const child = makeSpawn( cmd, args, opt || spawnOption );//spawn( cmd, args, opt || spawnOption );
 
 	return new Promise( (resolve, reject) =>{
 
