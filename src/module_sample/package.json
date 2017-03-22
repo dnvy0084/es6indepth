@@ -1,11 +1,11 @@
 {
-    "name": "make",
+    "name": "module_sample",
     "version": "1.0.0",
     "main": "make.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "webpack": "webpack",
-        "devserver": "webpack-dev-server --open"
+        "dev": "webpack-dev-server --open"
     },
     "author": "",
     "license": "ISC",
@@ -16,7 +16,6 @@
         "babel-polyfill": "^6.23.0",
         "babel-preset-latest": "^6.24.0",
         "babel-runtime": "^6.23.0",
-        "gulp": "^3.9.1",
         "webpack": "^2.3.0"
     },
     "devDependencies": {

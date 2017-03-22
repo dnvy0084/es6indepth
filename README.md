@@ -1874,9 +1874,126 @@ ES6 in Depth
 Project Setting
 ----
 
+##### Transpile
+
+* 모든 브라우저가 ES6 기능을 지원하는 것은 아니기 때문에 하위 버전 script로 변환할 필요가 있다. 
+* ES6 -> ES5 or ES3 변환을 transpile이라고 한다. 
+* 대표적인 transpile tool로 [babel](http://babeljs.io/)이 있다. 
+* import, export등 모듈화 문법은 commonjs로 변환한다. 
+
+##### Bundle
+
+* CommonJS, AMD 형식으로 Module화한 파일들을 하나의 파일로 연결하는 작업을 Bundle이라고 한다. 
+* 대표적인 bundle tool로 [webpack](https://webpack.js.org/)이 있다. 
+
+##### make.js
+
+* node.js를 이용해 npm init부터 es6 개발에 필요한 모듈 설치 및 template 파일들을 생성한다. 
+* `npm run webpack`으로 transpile및 bundling할 수 있다. 
+* `npm run dev`로 `webpack-dev-server`를 실행하여 개발할 수 있다. 
+
+
 [Module](http://hacks.mozilla.or.kr/2016/05/es6-in-depth-modules/)
 ----
+
+##### 모듈 기초
+
+* 모듈은 JS 코드를 담고 있는 파일이다. 
+* 모듈은 따로 'use strict'라고 적지 않아도 자동적으로 strict 모드로 처리된다. 
+* 모듈 안에서 export, import 키워드를 사용할 수 있다. 
+* 모듈은 따로 모듈 스코프를 갖는다. export하지 않은 변수나 함수등은 모듈 밖에서 참조가 불가능하다. 
+
+##### export
+
+* export 키워드는 모든 톱-레벨(top-level) `function, class, var, let, const` 항목에 덧붙일 수 있다.
+
+        export const RADIAN = Math.PI / 180;
+
+        export function* range( a, b ){
+
+            for( ; a < b; a++ ) yield a;
+        }
+
+        export class Point{
+
+            constructor( x = 0, y = 0){
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+* 공개할 항목마다 export 를 덧붙이지 않고, 중괄호를 이용해서 공개할 항목들의 목록을 한번에 선언할 수 있다. 
+
+        export { RADIAN, range, Point };
+
+* export 목록은 모듈 파일의 어디에나 올 수 있다. 다만 톱-레벨(top-level) 스코프여야 한다. export 목록이 여러개 올 수도 있다. 또 export 목록과 export 선언을 함께 사용할 수도 있다. 단 어떤 심볼도 한번만 export 되어야 한다.
+
+* default로 export할 심볼을 정할 수도 있다. CommonJS에서 `module.exports = Point`를 한것과 같은 효과이다. 
+    
+        class Point{
+
+            constructor( x = 0, y = 0){
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        export { Point as default };
+
+* 아래와 같이 축약하여 사용할 수 있다. 
+
+        export default class Point{
+
+            constructor( x = 0, y = 0){
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+##### import 
+
+* import 구문도 top level이라면 모듈 파일 어디에 위치해도 상관없다. hoisting 된다. 
+* 가독성을 위해 소스 맨 위에 위치하는게 좋다. 
+* default로 export되지 않은 심볼은 `{}`로 감싸야 한다. 
+
+        import { range, Point, RADIAN } from './utils/util';
+
+* import 하는 모듈과 겹치는 이름이 있을 경우 이름을 변경 가능하다. 
+
+        import { RADIAN as RAD } from './utils/util';
+
+* default로 export한 모듈일 경우 다음과 같이 import 가능하다. 
+
+        import Point from './utils/Point';
+
+* 아래과 같은 구문이다. 가독성을 위해 위와 같이 사용하는게 좋다. 
+
+        import default as Point from './utils/Point';
+
+* 모듈 네임스페이스 객체를 import할 수 있다. 
+
+        import * as util from './utils/util';
+        
+        let [ ...a ] = util.range( 1, 10 );
 
 [ES7](http://hacks.mozilla.or.kr/2016/07/es6-in-depth-the-future/)
 ----
 
+##### ES7을 위한 제안
+
+* 지수 연산자 2 ** 8 // 256 
+* Array.prototype.include(value) -1 대신 true || false를 반환한다. 
+* SIMD(single instruction multiple data) 최신 CPU가 제공하는 128-bit SIMD 명령어를 노출, 고성능의 대규모 연산이 필요한 경우 사용한다. 
+* async await : generator + promise로 구현한 co 함수를 대신할 키워드이다. await를 통해 함수 진행을 멈추고 promise의 resolve를 기다린다. 
+* TypedObject : TypedArray의 후속편. 메모리 사용과 속도에 이점이 있다. 
+        
+        // 새로운 struct 타입을 만듭니다.
+        // 모든 Point는 x와 y라는 이름의 2개 필드를 갖습니다.
+        var Point = new TypedObject.StructType({
+          x: TypedObject.int32,
+          y: TypedObject.int32
+        });
+
+        // 이제 정의한 타입의 인스턴스를 만듭니다.
+        var p = new Point({x: 800, y: 600});
+        console.log(p.x); // 800

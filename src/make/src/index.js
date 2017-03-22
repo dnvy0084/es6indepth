@@ -1,0 +1,1 @@
+document.write( `project intialized at ${navigator.userAgent}` )

@@ -1,0 +1,27 @@
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<script type="text/javascript">
+
+		export const RADIAN = Math.PI / 180;
+
+		export function* range( a, b ){
+
+			for( ; a < b; a++ ) yield a;
+		}
+
+		export default class Point{
+
+			constructor( x = 0, y = 0){
+				this.x = x;
+				this.y = y;
+			}
+		}
+
+		export { RADIAN, range, Point };
+
+	</script>
+</body>
+</html>
