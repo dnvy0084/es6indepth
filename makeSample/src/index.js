@@ -1,26 +1,26 @@
 
-document.write( `project intialized at ${navigator.userAgent}` );
+document.write(`project intialized at ${navigator.userAgent}`);
 
 const templates = [
-	'.babelrc', `{
-	'presets': [ 'latest' ],
-	'plugins': [ 
-		[ 'transform-runtime', {
-			'helpers': true,
-			'polyfill': true,
-			'regenerator': true,
-			'moduleName': 'babel-runtime'
+	".babelrc", `{
+	"presets": [ "latest" ],
+	"plugins": [ 
+		[ "transform-runtime", {
+			"helpers": true,
+			"polyfill": true,
+			"regenerator": true,
+			"moduleName": "babel-runtime"
 		}]
 	]
 }`,
-	'webpack.config.js', `/**
+	"webpack.config.js", `/**
  * webpack is fed via a configuration object. 
  * It is passed in one of two ways depending on how you are using webpack: through the terminal or via Node.js. 
  * All the available configuration options are specified below.
  * @ https://webpack.js.org/configuration/
  */
 
-const path = require( 'path' );
+const path = require( "path" );
 
 module.exports = {
 
@@ -117,10 +117,12 @@ module.exports = {
 	'dist/index.html', `<html>
 <head>
 	<title></title>
-	<script type="text/javascript" src='index.bundle.js'></script>
+	<script type='text/javascript' src='index.bundle.js'></script>
 </head>	
 <body>
 </body>
 </html>`,
 	'src/index.js', `document.write( \`project intialized at ${navigator.userAgent}\` )`,
-]
+];
+
+console.log(templates);

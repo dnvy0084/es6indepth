@@ -5,8 +5,8 @@ import { range, fibo } from './utils/range';
 
 const templates = {};
 
-templates[ '.babelrc' ] = `{
-	'presets': [ 'latest' ],
+templates['.babelrc'] = `{
+	'presets': ['latest'],
 	'plugins': [ 
 		[ 'transform-runtime', {
 			'helpers': true,
@@ -140,7 +140,7 @@ class Main(){
 		console.log( 'app running' );
 	}
 }
-`
+`;
 
 export default class Main{
 
@@ -159,7 +159,7 @@ export default class Main{
 	}
 
 	restAndDefault( a = 1, ...rest ){
-
+		// custom console
 		console.log( a, ...rest );
 	}
 

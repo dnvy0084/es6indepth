@@ -53,9 +53,8 @@ module.exports = {
 				// Each entry specifies a loader to be used.
 				// @ https://webpack.js.org/configuration/module/#rule-use
 				use: [
-					{
-						loader: 'babel-loader'
-					},
+					'babel-loader',
+					'eslint-loader'                     
 				]
 			}
 		]
@@ -86,7 +85,6 @@ module.exports = {
 	devServer: {
 		contentBase: path.join( __dirname, 'dist' ), // boolean | string | array, static file location
 		compress: true, // boolean | string | array, static file location
-		port: 9009,
 		// It is possible to configure advanced options for serving static files from contentBase.
 		// @ http://expressjs.com/en/4x/api.html#express.static
 		staticOptions: {

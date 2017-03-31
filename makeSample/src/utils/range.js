@@ -1,17 +1,24 @@
-
-export function* range(a, b){
-
-	for( ;a < b; a++ ) yield a;
+/**
+ * range
+ * @param {[type]} a             [description]
+ * @param {[type]} b             [description]
+ * @yield {[type]} [description]
+ */
+export function* range(a, b) {
+	for (let i = a; i < b; i++) yield a;
 }
 
-export function* fibo( len ){
+/**
+ * fibonaci
+ * @param {[type]} len           [description]
+ * @yield {[type]} [description]
+ */
+export function* fibo(len) {
+	let [a, b] = [0, 1];
 
-	let [ a, b ] = [ 0, 1 ];
-
-	for( ; len--; ){
-
+	for (let i = len; i--;) {
 		yield b;
-
-		[ a, b ] = [ b, a + b ]; 
+		
+		[a, b] = [b, a + b];
 	}
 }
