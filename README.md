@@ -1883,7 +1883,8 @@ Project Setting
 
 ##### Bundle
 
-* CommonJS, AMD 형식으로 Module화한 파일들을 하나의 파일로 연결하는 작업을 Bundle이라고 한다. 
+* CommonJS, AMD 형식으로 
+화한 파일들을 하나의 파일로 연결하는 작업을 Bundle이라고 한다. 
 * 대표적인 bundle tool로 [webpack](https://webpack.js.org/)이 있다. 
 
 ##### make.js
@@ -1968,7 +1969,7 @@ Project Setting
 
 * 아래과 같은 구문이다. 가독성을 위해 위와 같이 사용하는게 좋다. 
 
-        import default as Point from './utils/Point';
+        import {default as Point} from './utils/Point';
 
 * 모듈 네임스페이스 객체를 import할 수 있다. 
 
